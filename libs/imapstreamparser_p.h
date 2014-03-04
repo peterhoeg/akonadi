@@ -47,8 +47,9 @@ class ImapStreamParser
     /**
      * Construct the parser.
      * @param socket the local socket to work with.
+     * @param serverMode Whether the parser is used on server or client side
      */
-    ImapStreamParser( QIODevice *socket );
+    ImapStreamParser( QIODevice *socket, bool serverModeEnabled = true );
 
     /**
      * Destructor.
@@ -263,6 +264,7 @@ class ImapStreamParser
     int m_position;
     qint64 m_literalSize;
     bool m_peeking;
+    bool m_serverSideEnabled;
 };
 
 class ImapParserException: public std::exception

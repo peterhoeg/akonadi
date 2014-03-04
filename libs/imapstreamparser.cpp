@@ -29,11 +29,12 @@
 
 using namespace Akonadi;
 
-ImapStreamParser::ImapStreamParser( QIODevice *socket )
+ImapStreamParser::ImapStreamParser( QIODevice *socket, bool serverSideEnabled )
   : m_socket( socket )
   , m_position( 0 )
   , m_literalSize( 0 )
   , m_peeking( false )
+  , m_serverSideEnabled( serverSideEnabled )
 {
 }
 
@@ -136,7 +137,7 @@ bool ImapStreamParser::hasLiteral()
       ++m_position;
     }
 
-    if ( m_literalSize >= 0 ) {
+    if ( m_serverSideEnabled && m_literalSize >= 0 ) {
       sendContinuationResponse( m_literalSize );
     }
     return true;
@@ -746,14 +747,20 @@ QByteArray ImapStreamParser::readUntilCommandEnd()
       m_position = i;
       throw ImapParserException( "Unable to read more data" );
     }
+
     if ( !inQuotedString && m_data[i] == '{' ) {
-      m_position = i;
+      m_position = i - 1;
       hasLiteral(); //init literal size
-      result.append( m_data.mid( i - 1, m_position - i ) );
+      result.append( m_data.mid( i - 1, m_position - i + 1 ) );
       while ( !atLiteralEnd() ) {
         result.append( readLiteralPart() );
       }
+      // Read the last character of literal part and possible crlf
       i = m_position;
+      do {
+        result.append( m_data[i] );
+        ++i;
+      } while ( m_data[i] == ' ' || m_data[i] == '\n' || m_data[i] == '\r');
     }
 
     if ( !inQuotedString && m_data[i] == '(' ) {
