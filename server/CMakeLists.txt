@@ -193,7 +193,6 @@ set(libakonadiprivate_SRCS
   src/resourcemanager.cpp
   src/cachecleaner.cpp
   src/debuginterface.cpp
-  src/imapstreamparser.cpp
   src/preprocessorinstance.cpp
   src/preprocessormanager.cpp
   src/storagejanitor.cpp

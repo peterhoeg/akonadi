@@ -30,13 +30,13 @@
 namespace Akonadi {
 
 class ImapSet;
+class ImapStreamParser;
 
 namespace Server {
 
 class Response;
 class Connection;
 class QueryBuilder;
-class ImapStreamParser;
 
 AKONADI_EXCEPTION_MAKE_INSTANCE( HandlerException );
 

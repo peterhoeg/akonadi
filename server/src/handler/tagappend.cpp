@@ -20,7 +20,7 @@
 #include "tagappend.h"
 #include "tagfetchhelper.h"
 #include "connection.h"
-#include "imapstreamparser.h"
+#include "libs/imapstreamparser_p.h"
 #include "response.h"
 #include "storage/datastore.h"
 #include "storage/querybuilder.h"

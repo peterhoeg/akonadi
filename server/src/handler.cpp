@@ -59,8 +59,9 @@
 #include "handler/tagstore.h"
 
 #include "storage/querybuilder.h"
-#include "imapstreamparser.h"
+#include "libs/imapstreamparser_p.h"
 
+using namespace Akonadi;
 using namespace Akonadi::Server;
 
 Handler::Handler()

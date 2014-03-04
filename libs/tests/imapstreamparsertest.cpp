@@ -24,14 +24,16 @@
 #include <QtCore/QVariant>
 #include <QBuffer>
 
-#include "imapstreamparser.h"
-#include <aktest.h>
+#include "libs/imapstreamparser_p.h"
+#include "shared/aktest.h"
+
+#include <exception>
+
 
 Q_DECLARE_METATYPE( QList<QByteArray> )
 Q_DECLARE_METATYPE( QList<int> )
 
 using namespace Akonadi;
-using namespace Akonadi::Server;
 
 #if 0
 QString akBacktrace()
@@ -131,7 +133,7 @@ void ImapStreamParserTest::testParseQuotedString()
   // linebreak as separator
   result = parser.parseQuotedString();
   QCOMPARE( result, QByteArray( "LOGOUT" ) );
-  } catch ( const Akonadi::Server::Exception &e ) {
+  } catch ( const Akonadi::ImapParserException &e ) {
     qDebug() << "Caught exception: " << e.type() << " : " << e.what();
   }
 }
@@ -180,7 +182,7 @@ void ImapStreamParserTest::testParseString()
   exceptionExpected = true;
   result = parser.readString();
   QCOMPARE( result, QByteArray() );
-  } catch ( const Akonadi::Server::Exception &e ) {
+  } catch ( const Akonadi::ImapParserException &e ) {
     qDebug() << "Caught exception: " << e.type() << " : " << e.what();
     QVERIFY( exceptionExpected );
   }
@@ -248,7 +250,7 @@ void ImapStreamParserTest::testParseParenthesizedList()
     reference << "(\"BB)\" CC)";
 
     QCOMPARE( result, reference );
-  } catch ( const Akonadi::Server::Exception &e ) {
+  } catch ( const Akonadi::ImapParserException &e ) {
     qDebug() << "Caught exception: " << e.type() << " : " <<
         e.what();
     QVERIFY( false );
@@ -348,7 +350,7 @@ void ImapStreamParserTest::testParseSequenceSet()
   try {
     res = parser.readSequenceSet();
     QCOMPARE( res.intervals(), result );
-  } catch ( const Akonadi::Server::Exception &e ) {
+  } catch ( const Akonadi::ImapParserException &e ) {
     qDebug() << "Caught exception: " << e.type() << " : " << e.what();
     exceptionCaught = true;
   }
@@ -392,7 +394,7 @@ void ImapStreamParserTest::testParseDateTime()
   try {
     actualResult = parser.readDateTime();
     QCOMPARE( actualResult, result );
-  } catch ( const Akonadi::Server::Exception &e ) {
+  } catch ( const Akonadi::ImapParserException &e ) {
     qDebug() << "Caught exception: " << e.type() << " : " << e.what();
     exceptionCaught = true;
   }
@@ -419,7 +421,7 @@ void ImapStreamParserTest::testReadUntilCommandEnd()
     QVERIFY( !parser.atCommandEnd() );
     parser.readUntilCommandEnd();
     QCOMPARE( parser.readString(), QByteArray( "3" ) );
-  } catch ( const Akonadi::Server::Exception &e ) {
+  } catch ( const Akonadi::ImapParserException &e ) {
     qDebug() << e.type() << e.what();
     QFAIL( "Exception caught" );
   }
@@ -439,7 +441,7 @@ void ImapStreamParserTest::testReadUntilCommandEnd2()
     QCOMPARE( parser.readString(), QByteArray( "595" ) );
     QCOMPARE( parser.readUntilCommandEnd(), QByteArray( " MIMETYPE (message/rfc822 inode/directory) NAME \"child2\" REMOTEID \"{b42}\"\n" ) );
     QCOMPARE( parser.readString(), QByteArray( "NEXTCOMMAND" ) );
-  } catch ( const Akonadi::Server::Exception &e ) {
+  } catch ( const Akonadi::ImapParserException &e ) {
     qDebug() << e.type() << e.what();
     QFAIL( "Exception caught" );
   }
@@ -460,7 +462,7 @@ void ImapStreamParserTest::testAbortCommand()
     qDebug() << "!!!";
     parser.skipCurrentCommand();
     QCOMPARE( parser.readString(), QByteArray( "NEXTCOMMAND" ) );
-  } catch ( const Akonadi::Server::Exception &e ) {
+  } catch ( const Akonadi::ImapParserException &e ) {
     qDebug() << e.type() << e.what();
     QFAIL( "Exception caught" );
   }

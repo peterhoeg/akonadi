@@ -30,7 +30,7 @@
 #include "tracer.h"
 #include "clientcapabilityaggregator.h"
 
-#include "imapstreamparser.h"
+#include "libs/imapstreamparser_p.h"
 #include "shared/akdebug.h"
 #include "shared/akcrash.h"
 

@@ -25,7 +25,7 @@
 #include "storage/datastore.h"
 #include "storage/entity.h"
 #include "handlerhelper.h"
-#include "imapstreamparser.h"
+#include "libs/imapstreamparser_p.h"
 #include "storage/selectquerybuilder.h"
 
 #include "response.h"

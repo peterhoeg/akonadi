@@ -24,7 +24,7 @@
 #include "connection.h"
 #include "handler.h"
 #include "handlerhelper.h"
-#include "imapstreamparser.h"
+#include "libs/imapstreamparser_p.h"
 #include "libs/imapparser_p.h"
 #include "libs/protocol_p.h"
 #include "response.h"

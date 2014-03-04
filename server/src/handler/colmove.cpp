@@ -22,7 +22,7 @@
 #include <storage/datastore.h>
 #include <connection.h>
 #include <storage/itemretriever.h>
-#include <imapstreamparser.h>
+#include "libs/imapstreamparser_p.h"
 #include <storage/transaction.h>
 #include <storage/collectionqueryhelper.h>
 #include <storage/selectquerybuilder.h>

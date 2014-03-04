@@ -22,7 +22,7 @@
 #include "response.h"
 #include "handlerhelper.h"
 #include "libs/imapparser_p.h"
-#include "imapstreamparser.h"
+#include "libs/imapstreamparser_p.h"
 
 #include "akonadi.h"
 #include "connection.h"

@@ -24,9 +24,10 @@
 #include <QStringList>
 
 namespace Akonadi {
-namespace Server {
 
 class ImapStreamParser;
+
+namespace Server {
 
 /**
   Represents a set of Akonadi objects (eg. items or collections) selected for an operations.

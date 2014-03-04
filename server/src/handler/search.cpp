@@ -25,7 +25,7 @@
 #include "fetchhelper.h"
 #include "handlerhelper.h"
 #include "searchhelper.h"
-#include "imapstreamparser.h"
+#include "libs/imapstreamparser_p.h"
 #include "nepomuksearch.h"
 #include "response.h"
 #include "search/searchrequest.h"

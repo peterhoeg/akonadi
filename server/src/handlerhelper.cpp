@@ -18,7 +18,7 @@
  ***************************************************************************/
 
 #include "handlerhelper.h"
-#include "imapstreamparser.h"
+#include "libs/imapstreamparser_p.h"
 #include "storage/countquerybuilder.h"
 #include "storage/datastore.h"
 #include "storage/selectquerybuilder.h"

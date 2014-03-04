@@ -29,16 +29,12 @@
 #include <QtCore/QObject>
 #include <QtCore/QDateTime>
 
-#include "exception.h"
-
-AKONADI_EXCEPTION_MAKE_INSTANCE( ImapParserException );
+#include <exception>
 
 class QIODevice;
-
 class ImapStreamParserTest;
 
 namespace Akonadi {
-namespace Server {
 
 /**
   Parser for IMAP messages that operates on a local socket stream.
@@ -269,7 +265,44 @@ class ImapStreamParser
     bool m_peeking;
 };
 
-} // namespace Server
+class ImapParserException: public std::exception
+{
+  public:
+    ImapParserException( const char *what ) throw()
+      : mWhat( what )
+    {
+    }
+    ImapParserException( const QByteArray &what ) throw()
+      : mWhat( what )
+    {
+    }
+    ImapParserException( const QString &what ) throw()
+      : mWhat( what.toUtf8() )
+    {
+    }
+    ImapParserException( const ImapParserException &other ) throw()
+      : std::exception( other )
+      , mWhat( other.what() )
+    {
+    }
+    virtual ~ImapParserException() throw()
+    {
+    }
+    const char *what() const throw()
+    {
+      return mWhat.constData();
+    }
+    const char *type() const throw()
+    {
+      return "ImapStreamParserException";
+    }
+
+  private:
+    QByteArray mWhat;
+
+};
+
 } // namespace Akonadi
+
 
 #endif

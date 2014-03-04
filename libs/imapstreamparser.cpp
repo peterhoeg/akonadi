@@ -18,9 +18,8 @@
     02110-1301, USA.
 */
 
-#include "imapstreamparser.h"
-#include "response.h"
-#include "tracer.h"
+#include "imapstreamparser_p.h"
+//#include "tracer.h"
 
 #include <QtCore/QDateTime>
 #include <QtCore/QDebug>
@@ -29,7 +28,6 @@
 #include <QIODevice>
 
 using namespace Akonadi;
-using namespace Akonadi::Server;
 
 ImapStreamParser::ImapStreamParser( QIODevice *socket )
   : m_socket( socket )
@@ -814,7 +812,8 @@ void ImapStreamParser::sendContinuationResponse( qint64 size )
   m_socket->write( block );
   m_socket->waitForBytesWritten( 30000 );
 
-  Tracer::self()->connectionOutput( m_tracerId, block );
+  // TODO: Enable
+  // Tracer::self()->connectionOutput( m_tracerId, block );
 }
 
 void ImapStreamParser::insertData( const QByteArray &data )

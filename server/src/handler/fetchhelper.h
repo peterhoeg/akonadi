@@ -33,6 +33,7 @@ class FetchHelperTest;
 namespace Akonadi {
 
 class ImapSet;
+class ImapStreamParser;
 
 namespace Server {
 

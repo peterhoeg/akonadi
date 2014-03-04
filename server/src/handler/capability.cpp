@@ -20,7 +20,7 @@
 
 #include "capability.h"
 #include "response.h"
-#include "imapstreamparser.h"
+#include "libs/imapstreamparser_p.h"
 #include "clientcapabilities.h"
 #include "connection.h"
 

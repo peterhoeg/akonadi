@@ -29,9 +29,10 @@
 #include <QtCore/QStack>
 
 namespace Akonadi {
-namespace Server {
 
 class ImapStreamParser;
+
+namespace Server {
 
 /**
   Helper functions for command handlers.

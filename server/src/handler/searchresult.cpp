@@ -20,7 +20,7 @@
  */
 
 #include "searchresult.h"
-#include "imapstreamparser.h"
+#include "libs/imapstreamparser_p.h"
 #include "protocol_p.h"
 #include "storage/selectquerybuilder.h"
 #include "storage/itemqueryhelper.h"

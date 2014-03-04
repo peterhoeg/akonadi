@@ -21,7 +21,7 @@
 
 #include <connection.h>
 #include <entities.h>
-#include <imapstreamparser.h>
+#include "libs/imapstreamparser_p.h"
 #include <handlerhelper.h>
 #include <storage/datastore.h>
 #include <storage/itemretriever.h>

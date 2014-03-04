@@ -24,7 +24,6 @@ macro(add_server_test _source _libs)
   endif()
 endmacro()
 
-add_server_test(imapstreamparsertest.cpp akonadiprivate)
 add_server_test(scopetest.cpp akonadiprivate)
 add_server_test(handlerhelpertest.cpp akonadiprivate)
 add_server_test(dbtypetest.cpp akonadiprivate)

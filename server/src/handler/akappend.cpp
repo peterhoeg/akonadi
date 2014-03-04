@@ -20,7 +20,7 @@
 #include "akappend.h"
 
 #include "libs/imapparser_p.h"
-#include "imapstreamparser.h"
+#include "libs/imapstreamparser_p.h"
 
 #include "append.h"
 #include "response.h"

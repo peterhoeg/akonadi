@@ -20,7 +20,7 @@
 
 #include "response.h"
 #include "connection.h"
-#include "imapstreamparser.h"
+#include "libs/imapstreamparser_p.h"
 
 using namespace Akonadi::Server;
 

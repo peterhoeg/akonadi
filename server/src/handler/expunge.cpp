@@ -25,7 +25,7 @@
 #include "storage/datastore.h"
 #include "storage/selectquerybuilder.h"
 #include "storage/transaction.h"
-#include "imapstreamparser.h"
+#include "libs/imapstreamparser_p.h"
 
 using namespace Akonadi;
 using namespace Akonadi::Server;

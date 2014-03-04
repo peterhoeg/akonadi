@@ -28,13 +28,15 @@
 #include "clientcapabilities.h"
 
 namespace Akonadi {
+
+class ImapStreamParser;
+
 namespace Server {
 
 class Handler;
 class Response;
 class DataStore;
 class Collection;
-class ImapStreamParser;
 
 /**
     An AkonadiConnection represents one connection of a client to the server.

@@ -24,7 +24,7 @@
 #include <storage/entity.h>
 #include <storage/transaction.h>
 #include "libs/imapparser_p.h"
-#include "imapstreamparser.h"
+#include "libs/imapstreamparser_p.h"
 #include <handlerhelper.h>
 #include <response.h>
 #include <storage/itemretriever.h>

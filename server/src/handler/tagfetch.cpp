@@ -18,7 +18,7 @@
  ***************************************************************************/
 
 #include "tagfetch.h"
-#include "imapstreamparser.h"
+#include "libs/imapstreamparser_p.h"
 #include "connection.h"
 #include "libs/imapset_p.h"
 #include "libs/protocol_p.h"

@@ -18,11 +18,12 @@
 */
 
 #include "fetchscope.h"
-#include "imapstreamparser.h"
+#include "libs/imapstreamparser_p.h"
 #include "protocol_p.h"
 #include "handlerhelper.h"
 #include "handler.h"
 
+using namespace Akonadi;
 using namespace Akonadi::Server;
 
 class FetchScope::Private : public QSharedData

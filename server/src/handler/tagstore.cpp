@@ -20,7 +20,7 @@
 #include "tagstore.h"
 #include "scope.h"
 #include "tagfetchhelper.h"
-#include "imapstreamparser.h"
+#include "libs/imapstreamparser_p.h"
 #include "response.h"
 #include "storage/datastore.h"
 #include "libs/protocol_p.h"

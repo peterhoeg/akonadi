@@ -26,7 +26,7 @@
 #include <storage/entity.h>
 #include <storage/transaction.h>
 #include <search/searchmanager.h>
-#include "imapstreamparser.h"
+#include "libs/imapstreamparser_p.h"
 #include <storage/selectquerybuilder.h>
 #include <storage/collectionqueryhelper.h>
 #include "libs/protocol_p.h"

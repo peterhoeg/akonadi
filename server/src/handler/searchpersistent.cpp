@@ -27,7 +27,7 @@
 #include "storage/transaction.h"
 #include "handlerhelper.h"
 #include "search/searchmanager.h"
-#include "imapstreamparser.h"
+#include "libs/imapstreamparser_p.h"
 #include "libs/protocol_p.h"
 #include "libs/imapparser_p.h"
 #include <akdebug.h>

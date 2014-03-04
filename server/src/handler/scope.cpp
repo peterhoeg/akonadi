@@ -18,7 +18,7 @@
 */
 
 #include "scope.h"
-#include "imapstreamparser.h"
+#include "libs/imapstreamparser_p.h"
 #include "handler.h"
 #include "libs/protocol_p.h"
 

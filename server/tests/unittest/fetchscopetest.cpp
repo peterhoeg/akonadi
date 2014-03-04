@@ -23,8 +23,9 @@
 #include <QtCore/QBuffer>
 
 #include "handler/fetchscope.cpp"
-#include "imapstreamparser.h"
+#include "libs/imapstreamparser_p.h"
 
+using namespace Akonadi;
 using namespace Akonadi::Server;
 
 Q_DECLARE_METATYPE(QVector<QByteArray>)

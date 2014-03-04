@@ -28,7 +28,7 @@
 
 #include "response.h"
 #include "handlerhelper.h"
-#include "imapstreamparser.h"
+#include "libs/imapstreamparser_p.h"
 
 #include <libs/protocol_p.h>
 

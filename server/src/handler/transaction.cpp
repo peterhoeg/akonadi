@@ -21,7 +21,7 @@
 #include "storage/datastore.h"
 #include "connection.h"
 #include "response.h"
-#include "imapstreamparser.h"
+#include "libs/imapstreamparser_p.h"
 
 #include <QMetaEnum>
 

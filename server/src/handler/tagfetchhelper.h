@@ -28,10 +28,9 @@
 namespace Akonadi {
 
 class ImapSet;
+class ImapStreamParser;
 
 namespace Server {
-
-class ImapStreamParser;
 
 class Connection;
 class Response;

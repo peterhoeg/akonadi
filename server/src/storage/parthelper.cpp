@@ -24,7 +24,7 @@
 #include "selectquerybuilder.h"
 #include "dbconfig.h"
 #include "parttypehelper.h"
-#include "imapstreamparser.h"
+#include "libs/imapstreamparser_p.h"
 #include <akstandarddirs.h>
 #include <libs/xdgbasedirs_p.h>
 #include <libs/imapparser_p.h>

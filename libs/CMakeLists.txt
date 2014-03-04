@@ -10,6 +10,7 @@ set(akonadiprotocolinternals_srcs
   notificationmessagev2.cpp
   notificationmessagev3.cpp
   xdgbasedirs.cpp
+  imapstreamparser.cpp
 )
 
 add_library(akonadiprotocolinternals ${LIBRARY_TYPE} ${akonadiprotocolinternals_srcs})
@@ -33,6 +34,7 @@ install(FILES
   protocol_p.h
   xdgbasedirs_p.h
   capabilities_p.h
+  imapstreamparser_p.h
   DESTINATION ${INCLUDE_INSTALL_DIR}/akonadi/private
 )
 

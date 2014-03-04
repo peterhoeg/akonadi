@@ -29,9 +29,10 @@ class QVariant;
 class QFile;
 
 namespace Akonadi {
-namespace Server {
 
 class ImapStreamParser;
+
+namespace Server {
 
 AKONADI_EXCEPTION_MAKE_INSTANCE( PartHelperException );
 

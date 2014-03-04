@@ -27,7 +27,7 @@
 #include "storage/selectquerybuilder.h"
 #include "entities.h"
 
-#include "imapstreamparser.h"
+#include "libs/imapstreamparser_p.h"
 #include <storage/collectionqueryhelper.h>
 
 using namespace Akonadi::Server;
