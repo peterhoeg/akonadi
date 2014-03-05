@@ -302,6 +302,56 @@ void ImapStreamParserTest::testParseNumber()
   QCOMPARE( failed, !success );
 }
 
+void ImapStreamParserTest::testParseBool_data()
+{
+  QTest::addColumn<QByteArray>( "input" );
+  QTest::addColumn<int>( "startIndex" );
+  QTest::addColumn<bool>( "result" );
+  QTest::addColumn<bool>( "success" );
+
+  QTest::newRow( "empty" ) << QByteArray( " " ) << 0 << false << false;
+  QTest::newRow( "numerical true" ) << QByteArray( "1\n" ) << 0 << true << true;
+  QTest::newRow( "numerical false" ) << QByteArray( "0\n" ) << 0 << false << true;
+  QTest::newRow( "numerical invalid" ) << QByteArray( "15\n" ) << 0 << false << false;
+  QTest::newRow( "string true" ) << QByteArray( "true\n" ) << 0 << true << true;
+  QTest::newRow( "string false" ) << QByteArray( "false\n" ) << 0 << false << true;
+  QTest::newRow( "string invalid" ) << QByteArray( "foo\n" ) << 0 << false << false;
+  QTest::newRow( "numerical middle" ) << QByteArray( "foo 1 bar" ) << 4 << true << true;
+  QTest::newRow( "string middle" ) << QByteArray( "foo false true bar" ) << 3 << false << true;
+}
+
+void ImapStreamParserTest::testParseBool()
+{
+  QFETCH( QByteArray, input );
+  QFETCH( int, startIndex );
+  QFETCH( bool, result );
+  QFETCH( bool, success );
+
+  QBuffer buffer;
+  buffer.open( QBuffer::ReadWrite | QBuffer::Truncate );
+  ImapStreamParser parser( &buffer );
+
+  buffer.write( input );
+  buffer.seek( startIndex );
+
+  bool failed = false;
+  try {
+    bool ok = false;
+    bool value = parser.readBool( &ok );
+    QCOMPARE( ok, success );
+    QCOMPARE( value, result );
+    failed = !ok;
+  } catch( const ImapParserException &e ) {
+    if ( success ) {
+      qDebug() << "Caught unexpected parser exception:" << " : " << e.what();
+    }
+    failed = true;
+  }
+  QCOMPARE( failed, !success );
+}
+
+
+
 void ImapStreamParserTest::testParseSequenceSet_data()
 {
   QTest::addColumn<QByteArray>( "data" );

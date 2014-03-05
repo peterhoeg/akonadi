@@ -84,6 +84,55 @@ QByteArray ImapStreamParser::peekString()
   return string;
 }
 
+bool ImapStreamParser::readBool( bool *ok )
+{
+  if ( ok ) {
+    *ok = false;
+  }
+
+  if ( !waitForMoreData( m_position >= m_data.length() ) ) {
+    throw ImapParserException( "Unable to read more data" );
+  }
+
+  bool success = false, value = false;
+  stripLeadingSpaces();
+  int i = m_position;
+  if ( ( m_data[i] == '0' || m_data[i] == '1' )
+      && ( m_data[i + 1] == ' ' || m_data[i + 1] == '\r' || m_data[i + 1] == '\n' ) )
+  {
+    success = true;
+    value = ( m_data[i] == '1' );
+    ++i;
+
+  } else if ( m_data.mid( i, 4 ) == "true"
+    && ( m_data[i + 4] == ' ' || m_data[i + 4] == '\r' || m_data[i + 4] == '\n' ) )
+  {
+    success = true;
+    value = true;
+    i += 4;
+  } else if ( m_data.mid( i, 5 ) == "false"
+    && ( m_data[i + 5] == ' ' || m_data[i + 5] == '\r' || m_data[i + 5] == '\n' ) )
+  {
+    success = true;
+    value = false;
+    i += 5;
+  }
+
+  // Move past the space/newline
+  while ( m_data[i] == ' ' || m_data[i] == '\r' || m_data[i] == '\n' ) {
+    ++i;
+  }
+
+  if ( ok ) {
+    *ok = success;
+  } else if ( !success ) {
+    throw ImapParserException( "Unable to parse boolean" );
+  }
+
+  m_position = i;
+  return value;
+}
+
 bool ImapStreamParser::hasString()
 {
   if ( !waitForMoreData( m_position >= m_data.length() ) ) {
@@ -132,8 +181,7 @@ bool ImapStreamParser::hasLiteral()
     // strip CRLF
     m_position = end + 1;
 
-    //IMAP inconsistency. IMAP always expects CRLF, but akonadi uses only LF.
-    if ( m_position < m_data.length() && m_data[m_position] == '\n' ) {
+    while ( m_position < m_data.length() && ( m_data[m_position] == '\n' || m_data[m_position] == '\r' ) ) {
       ++m_position;
     }
 

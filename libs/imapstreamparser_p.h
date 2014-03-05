@@ -76,6 +76,16 @@ class ImapStreamParser
     QByteArray peekString();
 
     /**
+     * Get a boolean value from the message. If the upcoming data is 0, 1, "false"
+     * or "true", the method returns a respective boolean value and sets @p ok to
+     * true. If the upcoming data contain different value, @p ok is set to false
+     * and return value is undefined.
+     *
+     * @return true if the data is 1 or "true", or false for 0 or "false".
+     */
+    bool readBool( bool *ok = 0 );
+
+    /**
      * Get he next IMAP sequence set. If the upcoming data is not an IMAP sequence set,
      * the behavior is undefined. Use @ref hasSequenceSet to be sure a sequence set comes. This call might block.
      * @return the next IMAP sequence set.
