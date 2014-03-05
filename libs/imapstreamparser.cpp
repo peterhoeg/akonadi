@@ -708,7 +708,7 @@ qint64 ImapStreamParser::readNumber( bool *ok )
       m_position = i;
       throw ImapParserException( "Unable to read more data" );
     }
-    if ( !isdigit( m_data.at( i ) ) ) {
+    if ( !isdigit( m_data.at( i ) ) && m_data.at( i ) != '-' ) {
       break;
     }
     ++i;

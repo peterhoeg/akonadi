@@ -273,6 +273,8 @@ void ImapStreamParserTest::testParseNumber_data()
   QTest::newRow( "after end" ) << QByteArray( "1 23 4\n" ) << 6 << 0ll << false;
   QTest::newRow( "incomplete" ) << QByteArray( "1" ) << 0 << 0ll << false;
   QTest::newRow( "nan" ) << QByteArray( "foo" ) << 0 << 0ll << false;
+  QTest::newRow( "negative" ) << QByteArray( "-10\n" ) << 0 << -10ll << true;
+  QTest::newRow( "invalid negative" ) << QByteArray( "1-foo\n" ) << 1 << 0ll << false;
 }
 
 void ImapStreamParserTest::testParseNumber()
