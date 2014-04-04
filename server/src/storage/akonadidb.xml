@@ -171,6 +171,7 @@
     <column name="id" type="qint64" allowNull="false" isAutoIncrement="true" isPrimaryKey="true"/>
     <column name="gid" type="QString" allowNull="false"/>
     <column name="parentId" type="qint64" refTable="Tag" refColumn="id" allowNull="true" methodName="parent"/>
+    <column name="typeId" type="qint64" refTable="TagType" refColumn="id" onDelete="Restrict"/>
   </table>
 
   <table name="TagAttribute">
@@ -186,6 +187,11 @@
     <column name="resourceId"  type="qint64" allowNull="false" refTable="Resource" refColumn="id" onDelete="Cascade" />
     <column name="remoteId" type="QString" allowNull="false" />
     <index name="TagAndResourceIndex" columns="tagId,resourceId" unique="true"/>
+  </table>
+
+  <table name="TagType">
+    <column name="id" type="qint64" allowNull="false" isAutoIncrement="true" isPrimaryKey="true"/>
+    <column name="name" type="QString" allowNull="false" isUnique="true"/>
   </table>
 
   <relation table1="PimItem" column1="id" table2="Flag" column2="id"/>
