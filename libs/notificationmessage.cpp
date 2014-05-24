@@ -331,19 +331,16 @@ void NotificationMessage::appendAndCompress(NotificationMessage::List &list, con
                     (*it).setItemParts((*it).itemParts() + msg.itemParts());
                     *appended = false;
                     return;
-                }
-                // new one is a modification, the existing one not, so drop the new one
-                else if (msg.operation() == Modify) {
+                } else if (msg.operation() == Modify) {
+                    // new one is a modification, the existing one not, so drop the new one
                     *appended = false;
                     return;
-                }
-                // new on is a deletion, erase the existing modification ones (and keep going, in case there are more)
-                else if (msg.operation() == Remove && (*it).operation() == Modify) {
+                } else if (msg.operation() == Remove && (*it).operation() == Modify) {
+                    // new on is a deletion, erase the existing modification ones (and keep going, in case there are more)
                     it = list.erase(it);
                     end = list.end();
-                }
-                // keep looking
-                else {
+                } else {
+                    // keep looking
                     ++it;
                 }
             } else {

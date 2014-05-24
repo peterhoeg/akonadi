@@ -214,10 +214,8 @@ int ImapParser::parseQuotedString(const QByteArray &data, QByteArray &result, in
             }
             result += ch;
         }
-    }
-
-    // unquoted string
-    else {
+    } else {
+        // unquoted string
         bool reachedInputEnd = true;
         for (int i = begin; i < data.length(); ++i) {
             const char ch = data.at(i);
