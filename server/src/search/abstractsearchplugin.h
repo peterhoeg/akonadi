@@ -38,7 +38,7 @@ namespace Akonadi {
 class AbstractSearchPlugin
 {
 
-  public:
+public:
     /**
      * Destructor.
      */
@@ -53,12 +53,12 @@ class AbstractSearchPlugin
      * @return List of Akonadi Item IDs referring to items that are matching
      *         the query.
      */
-    virtual QSet<qint64> search( const QString &query, const QList<qint64> &collections, const QStringList &mimeTypes ) = 0;
+    virtual QSet<qint64> search(const QString &query, const QList<qint64> &collections, const QStringList &mimeTypes) = 0;
 
 };
 
 }
 
-Q_DECLARE_INTERFACE( Akonadi::AbstractSearchPlugin, "org.freedesktop.Akonadi.AbstractSearchPlugin" )
+Q_DECLARE_INTERFACE(Akonadi::AbstractSearchPlugin, "org.freedesktop.Akonadi.AbstractSearchPlugin")
 
 #endif
