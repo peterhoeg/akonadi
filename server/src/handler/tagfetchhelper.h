@@ -38,21 +38,21 @@ class Response;
 
 class TagFetchHelper : public QObject
 {
-  Q_OBJECT
+    Q_OBJECT
 
-  public:
-    TagFetchHelper( Connection *connection, const ImapSet &set );
+public:
+    TagFetchHelper(Connection *connection, const ImapSet &set);
 
-    bool fetchTags( const QByteArray &responseIdentifier );
+    bool fetchTags(const QByteArray &responseIdentifier);
 
-  Q_SIGNALS:
-    void responseAvailable( const Akonadi::Server::Response &response );
+Q_SIGNALS:
+    void responseAvailable(const Akonadi::Server::Response &response);
 
-  private:
+private:
     QSqlQuery buildTagQuery();
     QSqlQuery buildAttributeQuery();
 
-  private:
+private:
     ImapStreamParser *mStreamParser;
 
     Connection *mConnection;
