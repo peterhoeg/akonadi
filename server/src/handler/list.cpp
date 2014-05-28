@@ -51,7 +51,10 @@ List::List( Scope::SelectionScope scope, bool onlySubscribed ):
     mScope( scope ),
     mAncestorDepth( 0 ),
     mOnlySubscribed( onlySubscribed ),
-    mIncludeStatistics( false )
+    mIncludeStatistics( false ),
+    mCollectionsToDisplay( false ),
+    mCollectionsToSynchronize( false ),
+    mCollectionsToIndex( false )
 {}
 
 QStack<Collection> List::ancestorsForCollection( const Collection &col )
@@ -76,7 +79,7 @@ bool List::listCollection( const Collection &root, int depth, const QStack<Colle
   // recursive listing of child collections
   bool childrenFound = false;
   if ( depth > 0 ) {
-    Collection::List children = root.children();
+    const Collection::List children = retrieveChildren(root.id());
     QStack<Collection> ancestorsAndMe( ancestors );
     ancestorsAndMe.push( root );
     Q_FOREACH ( const Collection &col, children ) {
@@ -109,6 +112,38 @@ bool List::listCollection( const Collection &root, int depth, const QStack<Colle
   Q_EMIT responseAvailable( response );
 
   return true;
+}
+static Query::Condition filterCondition(const QString &column)
+{
+  Query::Condition orCondition(Query::Or);
+  orCondition.addValueCondition(column, Query::Equals, true);
+  Query::Condition andCondition(Query::And);
+  andCondition.addValueCondition(column, Query::Is, QVariant());
+  andCondition.addValueCondition(Collection::enabledFullColumnName(), Query::Equals, true);
+  orCondition.addCondition(andCondition);
+  return orCondition;
+}
+
+Collection::List List::retrieveChildren(const QVariant &value)
+{
+  SelectQueryBuilder<Collection> qb;
+  if ( value.isNull() ) {
+    qb.addValueCondition( Collection::parentIdColumn(), Query::Is, QVariant() );
+  } else {
+    qb.addValueCondition( Collection::parentIdColumn(), Query::Equals, value );
+  }
+
+  if (mCollectionsToSynchronize) {
+    qb.addCondition(filterCondition(Collection::syncPrefFullColumnName()));
+  } else if (mCollectionsToDisplay) {
+    qb.addCondition(filterCondition(Collection::displayPrefFullColumnName()));
+  } else if (mCollectionsToIndex) {
+    qb.addCondition(filterCondition(Collection::indexPrefFullColumnName()));
+  }
+  if ( !qb.exec() ) {
+    throw HandlerException( "Unable to retrieve collection for listing" );
+  }
+  return qb.result();
 }
 
 bool List::parseStream()
@@ -157,6 +192,12 @@ bool List::parseStream()
           mMimeTypes.append( mt.id() );
         }
       }
+    } else if ( filter == "SYNC" ) {
+      mCollectionsToSynchronize = true;
+    } else if ( filter == "DISPLAY" ) {
+      mCollectionsToDisplay = true;
+    } else if ( filter == "INDEX" ) {
+      mCollectionsToIndex = true;
     }
   }
 
@@ -188,6 +229,13 @@ bool List::parseStream()
       qb.addValueCondition( Collection::remoteIdFullColumnName(), Query::Equals, rid );
       qb.addJoin( QueryBuilder::InnerJoin, Resource::tableName(),
                   Collection::resourceIdFullColumnName(), Resource::idFullColumnName() );
+      if (mCollectionsToSynchronize) {
+          qb.addCondition(filterCondition(Collection::syncPrefFullColumnName()));
+      } else if (mCollectionsToDisplay) {
+          qb.addCondition(filterCondition(Collection::displayPrefFullColumnName()));
+      } else if (mCollectionsToIndex) {
+          qb.addCondition(filterCondition(Collection::indexPrefFullColumnName()));
+      }
       if ( mResource.isValid() ) {
         qb.addValueCondition( Resource::idFullColumnName(), Query::Equals, mResource.id() );
       } else if ( connection()->context()->resource().isValid() ) {
@@ -216,19 +264,19 @@ bool List::parseStream()
       return failureResponse( "Collection " + QByteArray::number( baseCollection ) + " does not exist" );
     }
 
-    if ( depth == 0 ) {
+    if ( depth == 0 ) { //Base listing
       collections << col;
       ancestors = ancestorsForCollection( col );
-    } else {
-      collections << col.children();
+    } else { //First level or recursive listing
+      collections << retrieveChildren(col.id());
       --depth;
       if ( !collections.isEmpty() ) {
         ancestors = ancestorsForCollection( collections.first() );
       }
     }
-  } else {
+  } else { //Root folder listing
     if ( depth != 0 ) {
-      Collection::List list = Collection::retrieveFiltered( Collection::parentIdColumn(), QVariant() );
+      Collection::List list = retrieveChildren(QVariant());
       collections << list;
     }
     --depth;
