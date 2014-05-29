@@ -116,9 +116,9 @@ bool List::listCollection( const Collection &root, int depth, const QStack<Colle
 static Query::Condition filterCondition(const QString &column)
 {
   Query::Condition orCondition(Query::Or);
-  orCondition.addValueCondition(column, Query::Equals, true);
+  orCondition.addValueCondition(column, Query::Equals, Akonadi::Server::True);
   Query::Condition andCondition(Query::And);
-  andCondition.addValueCondition(column, Query::Is, QVariant());
+  andCondition.addValueCondition(column, Query::Equals, Akonadi::Server::Undefined);
   andCondition.addValueCondition(Collection::enabledFullColumnName(), Query::Equals, true);
   orCondition.addCondition(andCondition);
   return orCondition;

@@ -22,7 +22,7 @@
   <Resource name="akonadi_fake_resource_0">
     <Collection remoteId="ColA" name="Collection A" enabled="true">
       <MimeType name="inode/directory"/>
-      <Collection remoteId="ColB" name="Collection B" enabled="false" syncPref="true" displayPref="true" indexPref="true">
+      <Collection remoteId="ColB" name="Collection B" enabled="false" syncPref="True" displayPref="True" indexPref="True">
         <MimeType name="application/octet-stream"/>
         <MimeType name="inode/directory"/>
         <PimItem remoteId="A" gid="A" mimeType="application/octet-stream" size="5">
@@ -65,7 +65,7 @@
         <PimItem remoteId="L" gid="L" mimeType="application/octet-stream2" size="9">
           <Part partType="PLD:DATA" datasize="9" data="testDataK"/>
         </PimItem>
-        <Collection remoteId="ColC" name="Collection C" enabled="true" syncPref="false" displayPref="false" indexPref="false">
+        <Collection remoteId="ColC" name="Collection C" enabled="true" syncPref="False" displayPref="False" indexPref="False">
           <MimeType name="inode/directory"/>
           <Collection remoteId="ColD" name="Collection D">
             <!-- TODO: Add some more items //-->
