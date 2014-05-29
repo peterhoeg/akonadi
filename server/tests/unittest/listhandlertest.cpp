@@ -23,16 +23,12 @@
 #include <imapstreamparser.h>
 #include <response.h>
 
-#include <libs/notificationmessagev3_p.h>
-#include <libs/notificationmessagev2_p.h>
-
 #include "fakeakonadiserver.h"
 #include "aktest.h"
 #include "akdebug.h"
 #include "entities.h"
 
 #include <QtTest/QTest>
-#include <QSignalSpy>
 
 using namespace Akonadi;
 using namespace Akonadi::Server;
@@ -63,7 +59,6 @@ private Q_SLOTS:
     void testList_data()
     {
         QTest::addColumn<QList<QByteArray> >("scenario");
-        QTest::addColumn<Akonadi::NotificationMessageV3>("notification");
         QTest::addColumn<bool>("expectFail");
 
         {
@@ -78,7 +73,7 @@ private Q_SLOTS:
                     << "S: * 7 6 (NAME \"Virtual Subcollection\" MIMETYPE () REMOTEID \"virtual2\" REMOTEREVISION \"\" RESOURCE \"akonadi_fake_resource_with_virtual_collections_0\" VIRTUAL 1 CACHEPOLICY (INHERIT true INTERVAL -1 CACHETIMEOUT -1 SYNCONDEMAND false LOCALPARTS (ALL)) )"
                     << "S: * 6 0 (NAME \"Virtual Collection\" MIMETYPE () REMOTEID \"virtual\" REMOTEREVISION \"\" RESOURCE \"akonadi_fake_resource_with_virtual_collections_0\" VIRTUAL 1 CACHEPOLICY (INHERIT true INTERVAL -1 CACHETIMEOUT -1 SYNCONDEMAND false LOCALPARTS (ALL)) )"
                     << "S: 2 OK List completed";
-            QTest::newRow("recursive list") << scenario << NotificationMessageV3() << false;
+            QTest::newRow("recursive list") << scenario << false;
         }
         {
             QList<QByteArray> scenario;
@@ -86,14 +81,14 @@ private Q_SLOTS:
                     << "C: 2 LIST 2 0 () ()"
                     << "S: * 2 0 (NAME \"Collection A\" MIMETYPE (inode/directory) REMOTEID \"ColA\" REMOTEREVISION \"\" RESOURCE \"akonadi_fake_resource_0\" VIRTUAL 0 CACHEPOLICY (INHERIT true INTERVAL -1 CACHETIMEOUT -1 SYNCONDEMAND false LOCALPARTS (ALL)) )"
                     << "S: 2 OK List completed";
-            QTest::newRow("base list") << scenario << NotificationMessageV3() << false;
+            QTest::newRow("base list") << scenario << false;
         }        {
             QList<QByteArray> scenario;
             scenario << FakeAkonadiServer::defaultScenario()
                     << "C: 2 LIST 2 1 () ()"
                     << "S: * 3 2 (NAME \"Collection B\" MIMETYPE (application/octet-stream inode/directory) REMOTEID \"ColB\" REMOTEREVISION \"\" RESOURCE \"akonadi_fake_resource_0\" VIRTUAL 0 CACHEPOLICY (INHERIT true INTERVAL -1 CACHETIMEOUT -1 SYNCONDEMAND false LOCALPARTS (ALL)) )"
                     << "S: 2 OK List completed";
-            QTest::newRow("first level list") << scenario << NotificationMessageV3() << false;
+            QTest::newRow("first level list") << scenario << false;
         }
         {
             QList<QByteArray> scenario;
@@ -105,7 +100,7 @@ private Q_SLOTS:
                     << "S: * 7 6 (NAME \"Virtual Subcollection\" MIMETYPE () REMOTEID \"virtual2\" REMOTEREVISION \"\" RESOURCE \"akonadi_fake_resource_with_virtual_collections_0\" VIRTUAL 1 CACHEPOLICY (INHERIT true INTERVAL -1 CACHETIMEOUT -1 SYNCONDEMAND false LOCALPARTS (ALL)) )"
                     << "S: * 6 0 (NAME \"Virtual Collection\" MIMETYPE () REMOTEID \"virtual\" REMOTEREVISION \"\" RESOURCE \"akonadi_fake_resource_with_virtual_collections_0\" VIRTUAL 1 CACHEPOLICY (INHERIT true INTERVAL -1 CACHETIMEOUT -1 SYNCONDEMAND false LOCALPARTS (ALL)) )"
                     << "S: 2 OK List completed";
-            QTest::newRow("recursive list to display including local override") << scenario << NotificationMessageV3() << false;
+            QTest::newRow("recursive list to display including local override") << scenario << false;
         }
         {
             QList<QByteArray> scenario;
@@ -117,7 +112,7 @@ private Q_SLOTS:
                     << "S: * 7 6 (NAME \"Virtual Subcollection\" MIMETYPE () REMOTEID \"virtual2\" REMOTEREVISION \"\" RESOURCE \"akonadi_fake_resource_with_virtual_collections_0\" VIRTUAL 1 CACHEPOLICY (INHERIT true INTERVAL -1 CACHETIMEOUT -1 SYNCONDEMAND false LOCALPARTS (ALL)) )"
                     << "S: * 6 0 (NAME \"Virtual Collection\" MIMETYPE () REMOTEID \"virtual\" REMOTEREVISION \"\" RESOURCE \"akonadi_fake_resource_with_virtual_collections_0\" VIRTUAL 1 CACHEPOLICY (INHERIT true INTERVAL -1 CACHETIMEOUT -1 SYNCONDEMAND false LOCALPARTS (ALL)) )"
                     << "S: 2 OK List completed";
-            QTest::newRow("recursive list to sync including local override") << scenario << NotificationMessageV3() << false;
+            QTest::newRow("recursive list to sync including local override") << scenario << false;
         }
         {
             QList<QByteArray> scenario;
@@ -129,36 +124,17 @@ private Q_SLOTS:
                     << "S: * 7 6 (NAME \"Virtual Subcollection\" MIMETYPE () REMOTEID \"virtual2\" REMOTEREVISION \"\" RESOURCE \"akonadi_fake_resource_with_virtual_collections_0\" VIRTUAL 1 CACHEPOLICY (INHERIT true INTERVAL -1 CACHETIMEOUT -1 SYNCONDEMAND false LOCALPARTS (ALL)) )"
                     << "S: * 6 0 (NAME \"Virtual Collection\" MIMETYPE () REMOTEID \"virtual\" REMOTEREVISION \"\" RESOURCE \"akonadi_fake_resource_with_virtual_collections_0\" VIRTUAL 1 CACHEPOLICY (INHERIT true INTERVAL -1 CACHETIMEOUT -1 SYNCONDEMAND false LOCALPARTS (ALL)) )"
                     << "S: 2 OK List completed";
-            QTest::newRow("recursive list to sync including local override") << scenario << NotificationMessageV3() << false;
+            QTest::newRow("recursive list to sync including local override") << scenario << false;
         }
     }
 
     void testList()
     {
         QFETCH(QList<QByteArray>, scenario);
-        QFETCH(NotificationMessageV3, notification);
         QFETCH(bool, expectFail);
 
         FakeAkonadiServer::instance()->setScenario(scenario);
         FakeAkonadiServer::instance()->runTest();
-
-//         QSignalSpy *notificationSpy = FakeAkonadiServer::instance()->notificationSpy();
-//         if (notification.isValid()) {
-//             QCOMPARE(notificationSpy->count(), 1);
-//             const NotificationMessageV3::List notifications = notificationSpy->takeFirst().first().value<NotificationMessageV3::List>();
-//             QCOMPARE(notifications.count(), 1);
-//             QCOMPARE(notifications.first(), notification);
-//         } else {
-//             QVERIFY(notificationSpy->isEmpty() || notificationSpy->takeFirst().first().value<NotificationMessageV3::List>().isEmpty());
-//         }
-
-//         Q_FOREACH (const NotificationMessageV2::Entity &entity, notification.entities()) {
-//             if (expectFail) {
-//               QVERIFY(!Collection::relatesToPimItem(notification.parentCollection(), entity.id));
-//             } else {
-//               QVERIFY(Collection::relatesToPimItem(notification.parentCollection(), entity.id));
-//             }
-//         }
     }
 
 };
