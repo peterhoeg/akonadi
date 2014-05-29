@@ -328,11 +328,11 @@ QString DbInitializer::sqlValue( const QString &type, const QString &value ) con
     return QLatin1String( "CURRENT_TIMESTAMP" );
   } else if (type == QLatin1String("Tristate")) {
     if (value == QLatin1String("False")) {
-      return QString::number(Akonadi::Server::False);
+      return QString::number(Akonadi::Server::Tristate::False);
     } else if (value == QLatin1String("True")) {
-      return QString::number(Akonadi::Server::True);
+      return QString::number(Akonadi::Server::Tristate::True);
     } else {
-      return QString::number(Akonadi::Server::Undefined);
+      return QString::number(Akonadi::Server::Tristate::Undefined);
     }
   }
 

@@ -87,9 +87,9 @@
     <column name="subscribed" type="bool" default="true" allowNull="false"/>
     <!--    TODO migrate subscribed to enabled and drop subscribed   -->
     <column name="enabled" type="bool" default="true" allowNull="false"/>
-    <column name="syncPref" type="Tristate" default="Undefined"/>
-    <column name="displayPref" type="Tristate" default="Undefined"/>
-    <column name="indexPref" type="Tristate" default="Undefined"/>
+    <column name="syncPref" type="Tristate" default="Tristate::Undefined"/>
+    <column name="displayPref" type="Tristate" default="Tristate::Undefined"/>
+    <column name="indexPref" type="Tristate" default="Tristate::Undefined"/>
     <column name="cachePolicyInherit" type="bool" default="true" allowNull="false"/>
     <column name="cachePolicyCheckInterval" type="int" default="-1" allowNull="false"/>
     <column name="cachePolicyCacheTimeout" type="int" default="-1" allowNull="false"/>

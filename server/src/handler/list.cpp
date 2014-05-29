@@ -116,9 +116,9 @@ bool List::listCollection( const Collection &root, int depth, const QStack<Colle
 static Query::Condition filterCondition(const QString &column)
 {
   Query::Condition orCondition(Query::Or);
-  orCondition.addValueCondition(column, Query::Equals, Akonadi::Server::True);
+  orCondition.addValueCondition(column, Query::Equals, Akonadi::Server::Tristate::True);
   Query::Condition andCondition(Query::And);
-  andCondition.addValueCondition(column, Query::Equals, Akonadi::Server::Undefined);
+  andCondition.addValueCondition(column, Query::Equals, Akonadi::Server::Tristate::Undefined);
   andCondition.addValueCondition(Collection::enabledFullColumnName(), Query::Equals, true);
   orCondition.addCondition(andCondition);
   return orCondition;
@@ -145,6 +145,7 @@ Collection::List List::retrieveChildren(const QVariant &value)
   }
   return qb.result();
 }
+
 
 bool List::parseStream()
 {

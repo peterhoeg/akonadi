@@ -56,7 +56,7 @@ class <xsl:value-of select="$className"/>::Private : public QSharedData
       , <xsl:value-of select="@name"/>( <xsl:choose><xsl:when test="@default"><xsl:value-of select="@default"/></xsl:when><xsl:otherwise>false</xsl:otherwise></xsl:choose> )
     </xsl:for-each>
     <xsl:for-each select="column[@type = 'Tristate']">
-      , <xsl:value-of select="@name"/>( <xsl:choose><xsl:when test="@default"><xsl:value-of select="@default"/></xsl:when><xsl:otherwise>Undefined</xsl:otherwise></xsl:choose> )
+      , <xsl:value-of select="@name"/>( <xsl:choose><xsl:when test="@default"><xsl:value-of select="@default"/></xsl:when><xsl:otherwise>Tristate::Undefined</xsl:otherwise></xsl:choose> )
     </xsl:for-each>
     <xsl:for-each select="column[@name != 'id']">
       , <xsl:value-of select="@name"/>_changed( false )

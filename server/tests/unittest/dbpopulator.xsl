@@ -165,7 +165,7 @@
         <xsl:when test="@type = 'Tristate'">
           <xsl:choose>
             <xsl:when test="$columnValue = 'NULL'">
-              <xsl:text>Undefined</xsl:text>
+              <xsl:text>Tristate::Undefined</xsl:text>
             </xsl:when>
             <xsl:otherwise>
               <xsl:value-of select="$columnValue" />
