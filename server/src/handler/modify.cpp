@@ -217,6 +217,55 @@ bool Modify::parseStream()
 
         changes.append( AKONADI_PARAM_PERSISTENTSEARCH );
       }
+    } else if ( type == "ENABLE" ) {
+      QByteArray tmp;
+      pos = ImapParser::parseString( line, tmp, pos );
+      collection.setEnabled( tmp == "TRUE" );
+      if ( !changes.contains("ENABLE") ) {
+        changes.append( "ENABLE" );
+      }
+    } else if ( type == "SYNC" ) {
+      QByteArray tmp;
+      pos = ImapParser::parseString( line, tmp, pos );
+      if ( tmp == "TRUE" ){
+        collection.setSyncPref( Tristate::True );
+      } else if ( tmp == "FALSE" ){
+        collection.setSyncPref( Tristate::False );
+      } else {
+        collection.setSyncPref( Tristate::Undefined );
+      }
+
+      if ( !changes.contains("ENABLE") ) {
+        changes.append( "ENABLE" );
+      }
+    } else if ( type == "DISPLAY" ) {
+      QByteArray tmp;
+      pos = ImapParser::parseString( line, tmp, pos );
+      if ( tmp == "TRUE" ){
+        collection.setDisplayPref( Tristate::True );
+      } else if ( tmp == "FALSE" ){
+        collection.setDisplayPref( Tristate::False );
+      } else {
+        collection.setDisplayPref( Tristate::Undefined );
+      }
+
+      if ( !changes.contains("ENABLE") ) {
+        changes.append( "ENABLE" );
+      }
+    } else if ( type == "INDEX" ) {
+      QByteArray tmp;
+      pos = ImapParser::parseString( line, tmp, pos );
+      if ( tmp == "TRUE" ){
+        collection.setIndexPref( Tristate::True );
+      } else if ( tmp == "FALSE" ){
+        collection.setIndexPref( Tristate::False );
+      } else {
+        collection.setIndexPref( Tristate::Undefined );
+      }
+
+      if ( !changes.contains("ENABLE") ) {
+        changes.append( "ENABLE" );
+      }
     } else if ( type.isEmpty() ) {
       break; // input end
     } else {
