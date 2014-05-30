@@ -93,7 +93,6 @@ CacheCleaner::~CacheCleaner()
 
 CacheCleaner *CacheCleaner::self()
 {
-  Q_ASSERT( sInstance );
   return sInstance;
 }
 

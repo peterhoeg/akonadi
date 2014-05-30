@@ -113,8 +113,12 @@ void NotificationCollector::itemsUnlinked( const PimItem::List &items, const Col
 void NotificationCollector::collectionAdded( const Collection &collection,
                                              const QByteArray &resource )
 {
-  CacheCleaner::self()->collectionAdded( collection.id() );
-  IntervalCheck::self()->collectionAdded( collection.id() );
+  if ( CacheCleaner::self() ) {
+    CacheCleaner::self()->collectionAdded( collection.id() );
+  }
+  if ( IntervalCheck::self() ) {
+    IntervalCheck::self()->collectionAdded( collection.id() );
+  }
   collectionNotification( NotificationMessageV2::Add, collection, collection.parentId(), -1, resource );
 }
 
@@ -122,8 +126,12 @@ void NotificationCollector::collectionChanged( const Collection &collection,
                                                const QList<QByteArray> &changes,
                                                const QByteArray &resource )
 {
-  CacheCleaner::self()->collectionChanged( collection.id() );
-  IntervalCheck::self()->collectionChanged( collection.id() );
+  if ( CacheCleaner::self() ) {
+    CacheCleaner::self()->collectionAdded( collection.id() );
+  }
+  if ( IntervalCheck::self() ) {
+    IntervalCheck::self()->collectionAdded( collection.id() );
+  }
   collectionNotification( NotificationMessageV2::Modify, collection, collection.parentId(), -1, resource, changes.toSet() );
 }
 

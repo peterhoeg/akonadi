@@ -42,7 +42,6 @@ IntervalCheck::~ IntervalCheck()
 
 IntervalCheck *IntervalCheck::self()
 {
-  Q_ASSERT( s_instance );
   return s_instance;
 }
 
