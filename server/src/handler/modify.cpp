@@ -221,9 +221,7 @@ bool Modify::parseStream()
       QByteArray tmp;
       pos = ImapParser::parseString( line, tmp, pos );
       collection.setEnabled( tmp == "TRUE" );
-      if ( !changes.contains("ENABLE") ) {
-        changes.append( "ENABLE" );
-      }
+      changes.append( "ENABLE" );
     } else if ( type == "SYNC" ) {
       QByteArray tmp;
       pos = ImapParser::parseString( line, tmp, pos );
@@ -235,9 +233,7 @@ bool Modify::parseStream()
         collection.setSyncPref( Tristate::Undefined );
       }
 
-      if ( !changes.contains("ENABLE") ) {
-        changes.append( "ENABLE" );
-      }
+      changes.append( "SYNC" );
     } else if ( type == "DISPLAY" ) {
       QByteArray tmp;
       pos = ImapParser::parseString( line, tmp, pos );
@@ -249,9 +245,7 @@ bool Modify::parseStream()
         collection.setDisplayPref( Tristate::Undefined );
       }
 
-      if ( !changes.contains("ENABLE") ) {
-        changes.append( "ENABLE" );
-      }
+      changes.append( "DISPLAY" );
     } else if ( type == "INDEX" ) {
       QByteArray tmp;
       pos = ImapParser::parseString( line, tmp, pos );
@@ -263,9 +257,7 @@ bool Modify::parseStream()
         collection.setIndexPref( Tristate::Undefined );
       }
 
-      if ( !changes.contains("ENABLE") ) {
-        changes.append( "ENABLE" );
-      }
+      changes.append( "INDEX" );
     } else if ( type.isEmpty() ) {
       break; // input end
     } else {
