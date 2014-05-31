@@ -103,6 +103,7 @@ class List : public Handler
     int mAncestorDepth;
     bool mOnlySubscribed;
     bool mIncludeStatistics;
+    bool mEnabledCollections;
     bool mCollectionsToDisplay;
     bool mCollectionsToSynchronize;
     bool mCollectionsToIndex;

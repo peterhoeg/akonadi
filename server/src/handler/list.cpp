@@ -52,6 +52,7 @@ List::List( Scope::SelectionScope scope, bool onlySubscribed ):
     mAncestorDepth( 0 ),
     mOnlySubscribed( onlySubscribed ),
     mIncludeStatistics( false ),
+    mEnabledCollections( false ),
     mCollectionsToDisplay( false ),
     mCollectionsToSynchronize( false ),
     mCollectionsToIndex( false )
@@ -133,7 +134,9 @@ Collection::List List::retrieveChildren(const QVariant &value)
     qb.addValueCondition( Collection::parentIdColumn(), Query::Equals, value );
   }
 
-  if (mCollectionsToSynchronize) {
+  if (mEnabledCollections) {
+    qb.addValueCondition(Collection::enabledFullColumnName(), Query::Equals, true);
+  } else if (mCollectionsToSynchronize) {
     qb.addCondition(filterCondition(Collection::syncPrefFullColumnName()));
   } else if (mCollectionsToDisplay) {
     qb.addCondition(filterCondition(Collection::displayPrefFullColumnName()));
@@ -193,6 +196,8 @@ bool List::parseStream()
           mMimeTypes.append( mt.id() );
         }
       }
+    } else if ( filter == "ENABLED" ) {
+      mEnabledCollections = true;
     } else if ( filter == "SYNC" ) {
       mCollectionsToSynchronize = true;
     } else if ( filter == "DISPLAY" ) {
