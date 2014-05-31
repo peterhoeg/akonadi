@@ -165,6 +165,32 @@ bool Create::parseStream()
       HandlerHelper::parseCachePolicy( value, collection );
     } else if ( key == AKONADI_PARAM_VIRTUAL ) {
       collection.setIsVirtual( value.toUInt() != 0 );
+    } else if ( key == "ENABLE" ) {
+      collection.setEnabled( value == "TRUE" );
+    } else if ( key == "SYNC" ) {
+      if ( value == "TRUE" ){
+        collection.setSyncPref( Tristate::True );
+      } else if ( value == "FALSE" ){
+        collection.setSyncPref( Tristate::False );
+      } else {
+        collection.setSyncPref( Tristate::Undefined );
+      }
+    } else if ( key == "DISPLAY" ) {
+      if ( value == "TRUE" ){
+        collection.setDisplayPref( Tristate::True );
+      } else if ( value == "FALSE" ){
+        collection.setDisplayPref( Tristate::False );
+      } else {
+        collection.setDisplayPref( Tristate::Undefined );
+      }
+    } else if ( key == "INDEX" ) {
+      if ( value == "TRUE" ){
+        collection.setIndexPref( Tristate::True );
+      } else if ( value == "FALSE" ){
+        collection.setIndexPref( Tristate::False );
+      } else {
+        collection.setIndexPref( Tristate::Undefined );
+      }
     } else {
       userDefAttrs << qMakePair( key, value );
     }
