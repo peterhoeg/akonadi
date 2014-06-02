@@ -165,7 +165,7 @@ bool Create::parseStream()
       HandlerHelper::parseCachePolicy( value, collection );
     } else if ( key == AKONADI_PARAM_VIRTUAL ) {
       collection.setIsVirtual( value.toUInt() != 0 );
-    } else if ( key == "ENABLE" ) {
+    } else if ( key == "ENABLED" ) {
       collection.setEnabled( value == "TRUE" );
     } else if ( key == "SYNC" ) {
       if ( value == "TRUE" ){

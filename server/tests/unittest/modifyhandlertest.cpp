@@ -84,44 +84,44 @@ private Q_SLOTS:
         {
             QList<QByteArray> scenario;
             scenario << FakeAkonadiServer::defaultScenario()
-                    << "C: 2 MODIFY 5 ENABLE TRUE SYNC DEFAULT DISPLAY DEFAULT INDEX DEFAULT"
+                    << "C: 2 MODIFY 5 ENABLED TRUE SYNC DEFAULT DISPLAY DEFAULT INDEX DEFAULT"
                     << "S: 2 OK MODIFY done";
 
             Akonadi::NotificationMessageV3 notification = notificationTemplate;
-            notification.setItemParts(QSet<QByteArray>() << "ENABLE" << "SYNC" << "DISPLAY" << "INDEX");
+            notification.setItemParts(QSet<QByteArray>() << "ENABLED" << "SYNC" << "DISPLAY" << "INDEX");
 
             QTest::newRow("enable collection") << scenario <<  notification << false << QVariant::fromValue(true);
         }
         {
             QList<QByteArray> scenario;
             scenario << FakeAkonadiServer::defaultScenario()
-                    << "C: 2 MODIFY 5 ENABLE FALSE SYNC DEFAULT DISPLAY DEFAULT INDEX DEFAULT"
+                    << "C: 2 MODIFY 5 ENABLED FALSE SYNC DEFAULT DISPLAY DEFAULT INDEX DEFAULT"
                     << "S: 2 OK MODIFY done";
 
             Akonadi::NotificationMessageV3 notification = notificationTemplate;
-            notification.setItemParts(QSet<QByteArray>() << "ENABLE" << "SYNC" << "DISPLAY" << "INDEX");
+            notification.setItemParts(QSet<QByteArray>() << "ENABLED" << "SYNC" << "DISPLAY" << "INDEX");
 
             QTest::newRow("disable collection") << scenario <<  notification << false << QVariant::fromValue(false);
         }
         {
             QList<QByteArray> scenario;
             scenario << FakeAkonadiServer::defaultScenario()
-                    << "C: 2 MODIFY 5 ENABLE FALSE SYNC TRUE DISPLAY TRUE INDEX TRUE"
+                    << "C: 2 MODIFY 5 ENABLED FALSE SYNC TRUE DISPLAY TRUE INDEX TRUE"
                     << "S: 2 OK MODIFY done";
 
             Akonadi::NotificationMessageV3 notification = notificationTemplate;
-            notification.setItemParts(QSet<QByteArray>() << "ENABLE" << "SYNC" << "DISPLAY" << "INDEX");
+            notification.setItemParts(QSet<QByteArray>() << "ENABLED" << "SYNC" << "DISPLAY" << "INDEX");
 
             QTest::newRow("local override enable") << scenario <<  notification << false << QVariant::fromValue(true);
         }
         {
             QList<QByteArray> scenario;
             scenario << FakeAkonadiServer::defaultScenario()
-                    << "C: 2 MODIFY 5 ENABLE TRUE SYNC FALSE DISPLAY FALSE INDEX FALSE"
+                    << "C: 2 MODIFY 5 ENABLED TRUE SYNC FALSE DISPLAY FALSE INDEX FALSE"
                     << "S: 2 OK MODIFY done";
 
             Akonadi::NotificationMessageV3 notification = notificationTemplate;
-            notification.setItemParts(QSet<QByteArray>() << "ENABLE" << "SYNC" << "DISPLAY" << "INDEX");
+            notification.setItemParts(QSet<QByteArray>() << "ENABLED" << "SYNC" << "DISPLAY" << "INDEX");
 
             QTest::newRow("local override disable") << scenario <<  notification << false << QVariant::fromValue(false);
         }
@@ -152,7 +152,7 @@ private Q_SLOTS:
                 Collection col = Collection::retrieveById( entity.id );
                 QCOMPARE(col.name(), newValue.toString());
             }
-            if (notification.itemParts().contains("ENABLE") || notification.itemParts().contains("SYNC") || notification.itemParts().contains("DISPLAY") || notification.itemParts().contains("INDEX")) {
+            if (notification.itemParts().contains("ENABLED") || notification.itemParts().contains("SYNC") || notification.itemParts().contains("DISPLAY") || notification.itemParts().contains("INDEX")) {
                 Collection col = Collection::retrieveById( entity.id );
                 const bool sync = col.syncPref() == Tristate::Undefined ? col.enabled() : col.syncPref() == Tristate::True;
                 QCOMPARE(sync, newValue.toBool());

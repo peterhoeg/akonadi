@@ -83,7 +83,7 @@ private Q_SLOTS:
         {
             QList<QByteArray> scenario;
             scenario << FakeAkonadiServer::defaultScenario()
-                    << "C: 2 CREATE \"Name2\" 3 (ENABLE FALSE DISPLAY TRUE SYNC TRUE INDEX TRUE)"
+                    << "C: 2 CREATE \"Name2\" 3 (ENABLED FALSE DISPLAY TRUE SYNC TRUE INDEX TRUE)"
                     << "S: * 9 3 (NAME \"Name2\" MIMETYPE (application/octet-stream inode/directory) REMOTEID \"\" REMOTEREVISION \"\" RESOURCE \"akonadi_fake_resource_0\" VIRTUAL 0 CACHEPOLICY (INHERIT true INTERVAL -1 CACHETIMEOUT -1 SYNCONDEMAND false LOCALPARTS (ALL)) ENABLED FALSE DISPLAY TRUE SYNC TRUE INDEX TRUE )"
                     << "S: 2 OK CREATE completed";
 

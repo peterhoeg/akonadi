@@ -217,11 +217,11 @@ bool Modify::parseStream()
 
         changes.append( AKONADI_PARAM_PERSISTENTSEARCH );
       }
-    } else if ( type == "ENABLE" ) {
+    } else if ( type == "ENABLED" ) {
       QByteArray tmp;
       pos = ImapParser::parseString( line, tmp, pos );
       collection.setEnabled( tmp == "TRUE" );
-      changes.append( "ENABLE" );
+      changes.append( "ENABLED" );
     } else if ( type == "SYNC" ) {
       QByteArray tmp;
       pos = ImapParser::parseString( line, tmp, pos );
