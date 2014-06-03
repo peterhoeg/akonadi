@@ -231,9 +231,14 @@ bool Modify::parseStream()
       }
     } else if ( type == AKONADI_PARAM_ENABLED ) {
       //Not actually a tristate
-      collection.setEnabled( getTristateValue( line, pos ) == Server::True );
+      const bool enabled = ( getTristateValue( line, pos ) == Server::True );
+      collection.setEnabled( enabled );
       changes.append( AKONADI_PARAM_ENABLED );
-      //FIXME subscribed notification?
+      if ( enabled ) {
+        db->notificationCollector()->collectionSubscribed( collection );
+      } else {
+        db->notificationCollector()->collectionUnsubscribed( collection );
+      }
     } else if ( type == AKONADI_PARAM_SYNC ) {
       collection.setSyncPref ( getTristateValue( line, pos ) );
       changes.append( AKONADI_PARAM_SYNC );
