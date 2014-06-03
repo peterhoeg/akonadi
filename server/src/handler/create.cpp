@@ -42,6 +42,16 @@ Create::Create( Scope::SelectionScope scope )
 {
 }
 
+static Tristate getTristateValue( const QByteArray &value )
+{
+  if ( value == "TRUE" ){
+    return Tristate::True;
+  } else if ( value == "FALSE" ){
+    return Tristate::False;
+  }
+  return Tristate::Undefined;
+}
+
 bool Create::parseStream()
 {
   QString name = m_streamParser->readUtf8String();
@@ -165,32 +175,14 @@ bool Create::parseStream()
       HandlerHelper::parseCachePolicy( value, collection );
     } else if ( key == AKONADI_PARAM_VIRTUAL ) {
       collection.setIsVirtual( value.toUInt() != 0 );
-    } else if ( key == "ENABLED" ) {
-      collection.setEnabled( value == "TRUE" );
-    } else if ( key == "SYNC" ) {
-      if ( value == "TRUE" ){
-        collection.setSyncPref( Tristate::True );
-      } else if ( value == "FALSE" ){
-        collection.setSyncPref( Tristate::False );
-      } else {
-        collection.setSyncPref( Tristate::Undefined );
-      }
-    } else if ( key == "DISPLAY" ) {
-      if ( value == "TRUE" ){
-        collection.setDisplayPref( Tristate::True );
-      } else if ( value == "FALSE" ){
-        collection.setDisplayPref( Tristate::False );
-      } else {
-        collection.setDisplayPref( Tristate::Undefined );
-      }
-    } else if ( key == "INDEX" ) {
-      if ( value == "TRUE" ){
-        collection.setIndexPref( Tristate::True );
-      } else if ( value == "FALSE" ){
-        collection.setIndexPref( Tristate::False );
-      } else {
-        collection.setIndexPref( Tristate::Undefined );
-      }
+    } else if ( key == AKONADI_PARAM_ENABLED ) {
+      collection.setEnabled( getTristateValue( value ) == Server::True );
+    } else if ( key == AKONADI_PARAM_SYNC ) {
+      collection.setSyncPref( getTristateValue( value ) );
+    } else if ( key == AKONADI_PARAM_DISPLAY ) {
+      collection.setDisplayPref( getTristateValue( value ) );
+    } else if ( AKONADI_PARAM_INDEX ) {
+      collection.setIndexPref( getTristateValue( value ) );
     } else {
       userDefAttrs << qMakePair( key, value );
     }

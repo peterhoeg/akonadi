@@ -43,6 +43,18 @@ Modify::Modify( Scope::SelectionScope scope )
 {
 }
 
+static Tristate getTristateValue( const QByteArray &line,  int &pos )
+{
+  QByteArray tmp;
+  pos = ImapParser::parseString( line, tmp, pos );
+  if ( tmp == "TRUE" ){
+    return Tristate::True;
+  } else if ( tmp == "FALSE" ){
+    return Tristate::False;
+  }
+  return Tristate::Undefined;
+}
+
 bool Modify::parseStream()
 {
   m_scope.parseScope( m_streamParser );
@@ -217,47 +229,20 @@ bool Modify::parseStream()
 
         changes.append( AKONADI_PARAM_PERSISTENTSEARCH );
       }
-    } else if ( type == "ENABLED" ) {
-      QByteArray tmp;
-      pos = ImapParser::parseString( line, tmp, pos );
-      collection.setEnabled( tmp == "TRUE" );
-      changes.append( "ENABLED" );
-    } else if ( type == "SYNC" ) {
-      QByteArray tmp;
-      pos = ImapParser::parseString( line, tmp, pos );
-      if ( tmp == "TRUE" ){
-        collection.setSyncPref( Tristate::True );
-      } else if ( tmp == "FALSE" ){
-        collection.setSyncPref( Tristate::False );
-      } else {
-        collection.setSyncPref( Tristate::Undefined );
-      }
-
-      changes.append( "SYNC" );
-    } else if ( type == "DISPLAY" ) {
-      QByteArray tmp;
-      pos = ImapParser::parseString( line, tmp, pos );
-      if ( tmp == "TRUE" ){
-        collection.setDisplayPref( Tristate::True );
-      } else if ( tmp == "FALSE" ){
-        collection.setDisplayPref( Tristate::False );
-      } else {
-        collection.setDisplayPref( Tristate::Undefined );
-      }
-
-      changes.append( "DISPLAY" );
-    } else if ( type == "INDEX" ) {
-      QByteArray tmp;
-      pos = ImapParser::parseString( line, tmp, pos );
-      if ( tmp == "TRUE" ){
-        collection.setIndexPref( Tristate::True );
-      } else if ( tmp == "FALSE" ){
-        collection.setIndexPref( Tristate::False );
-      } else {
-        collection.setIndexPref( Tristate::Undefined );
-      }
-
-      changes.append( "INDEX" );
+    } else if ( type == AKONADI_PARAM_ENABLED ) {
+      //Not actually a tristate
+      collection.setEnabled( getTristateValue( line, pos ) == Server::True );
+      changes.append( AKONADI_PARAM_ENABLED );
+      //FIXME subscribed notification?
+    } else if ( type == AKONADI_PARAM_SYNC ) {
+      collection.setSyncPref ( getTristateValue( line, pos ) );
+      changes.append( AKONADI_PARAM_SYNC );
+    } else if ( type == AKONADI_PARAM_DISPLAY ) {
+      collection.setDisplayPref ( getTristateValue( line, pos ) );
+      changes.append( AKONADI_PARAM_DISPLAY );
+    } else if ( type == AKONADI_PARAM_INDEX ) {
+      collection.setIndexPref ( getTristateValue( line, pos ) );
+      changes.append( AKONADI_PARAM_INDEX );
     } else if ( type.isEmpty() ) {
       break; // input end
     } else {

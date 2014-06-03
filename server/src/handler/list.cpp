@@ -114,18 +114,19 @@ bool List::listCollection( const Collection &root, int depth, const QStack<Colle
 
   return true;
 }
-static Query::Condition filterCondition(const QString &column)
+
+static Query::Condition filterCondition( const QString &column )
 {
-  Query::Condition orCondition(Query::Or);
-  orCondition.addValueCondition(column, Query::Equals, Akonadi::Server::Tristate::True);
-  Query::Condition andCondition(Query::And);
-  andCondition.addValueCondition(column, Query::Equals, Akonadi::Server::Tristate::Undefined);
-  andCondition.addValueCondition(Collection::enabledFullColumnName(), Query::Equals, true);
-  orCondition.addCondition(andCondition);
+  Query::Condition orCondition( Query::Or );
+  orCondition.addValueCondition( column, Query::Equals, Akonadi::Server::Tristate::True );
+  Query::Condition andCondition( Query::And );
+  andCondition.addValueCondition( column, Query::Equals, Akonadi::Server::Tristate::Undefined );
+  andCondition.addValueCondition( Collection::enabledFullColumnName(), Query::Equals, true );
+  orCondition.addCondition( andCondition );
   return orCondition;
 }
 
-Collection::List List::retrieveChildren(const QVariant &value)
+Collection::List List::retrieveChildren( const QVariant &value )
 {
   SelectQueryBuilder<Collection> qb;
   if ( value.isNull() ) {
@@ -134,14 +135,14 @@ Collection::List List::retrieveChildren(const QVariant &value)
     qb.addValueCondition( Collection::parentIdColumn(), Query::Equals, value );
   }
 
-  if (mEnabledCollections) {
-    qb.addValueCondition(Collection::enabledFullColumnName(), Query::Equals, true);
-  } else if (mCollectionsToSynchronize) {
-    qb.addCondition(filterCondition(Collection::syncPrefFullColumnName()));
-  } else if (mCollectionsToDisplay) {
-    qb.addCondition(filterCondition(Collection::displayPrefFullColumnName()));
-  } else if (mCollectionsToIndex) {
-    qb.addCondition(filterCondition(Collection::indexPrefFullColumnName()));
+  if ( mEnabledCollections ) {
+    qb.addValueCondition( Collection::enabledFullColumnName(), Query::Equals, true );
+  } else if ( mCollectionsToSynchronize ) {
+    qb.addCondition( filterCondition( Collection::syncPrefFullColumnName() ) );
+  } else if ( mCollectionsToDisplay ) {
+    qb.addCondition( filterCondition( Collection::displayPrefFullColumnName() ) );
+  } else if ( mCollectionsToIndex ) {
+    qb.addCondition( filterCondition( Collection::indexPrefFullColumnName() ) );
   }
   if ( !qb.exec() ) {
     throw HandlerException( "Unable to retrieve collection for listing" );
