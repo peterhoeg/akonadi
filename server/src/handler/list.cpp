@@ -194,13 +194,13 @@ bool List::parseStream()
           mMimeTypes.append( mt.id() );
         }
       }
-    } else if ( filter == "ENABLED" ) {
+    } else if ( filter == AKONADI_PARAM_ENABLED ) {
       mEnabledCollections = true;
-    } else if ( filter == "SYNC" ) {
+    } else if ( filter == AKONADI_PARAM_SYNC ) {
       mCollectionsToSynchronize = true;
-    } else if ( filter == "DISPLAY" ) {
+    } else if ( filter == AKONADI_PARAM_DISPLAY ) {
       mCollectionsToDisplay = true;
-    } else if ( filter == "INDEX" ) {
+    } else if ( filter == AKONADI_PARAM_INDEX ) {
       mCollectionsToIndex = true;
     }
   }
