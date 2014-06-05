@@ -26,42 +26,42 @@
 #include <QBuffer>
 #include <QTest>
 
-#define AKTEST_MAIN( TestObject ) \
-int main( int argc, char **argv ) \
+#define AKTEST_MAIN(TestObject) \
+int main(int argc, char **argv) \
 { \
-  qputenv( "XDG_DATA_HOME", ".local-unit-test/share" ); \
-  qputenv( "XDG_CONFIG_HOME", ".config-unit-test" ); \
-  AkCoreApplication app( argc, argv ); \
-  app.parseCommandLine(); \
-  TestObject tc; \
-  return QTest::qExec( &tc, argc, argv ); \
+    qputenv("XDG_DATA_HOME", ".local-unit-test/share"); \
+    qputenv("XDG_CONFIG_HOME", ".config-unit-test"); \
+    AkCoreApplication app(argc, argv); \
+    app.parseCommandLine(); \
+    TestObject tc; \
+    return QTest::qExec(&tc, argc, argv); \
 }
 
 
 #define AKTEST_FAKESERVER_MAIN(TestObject) \
 int main(int argc, char **argv) \
 { \
-  FakeAkonadiServer::instance(); \
-  AkCoreApplication app(argc, argv); \
-  boost::program_options::options_description testOptions( "Unit Test" ); \
-  testOptions.add_options() \
-      ( "no-cleanup", "Don't clean up the temporary runtime environment" ); \
-  app.addCommandLineOptions(testOptions); \
-  app.parseCommandLine(); \
-  /* HACK: Supernasty hack to remove AkCoreApplication options from argv before \
-     it's passed to QTest, which will abort on custom-defined options */ \
-  QList<char*> options; \
-  for (int i = 0; i < argc; ++i) { \
-      if (qstrcmp(argv[i], "--no-cleanup") > 0) { \
-            options << argv[i]; \
-      } \
-  } \
-  TestObject tc; \
-  char **fakeArgv = (char **) malloc(options.count()); \
-  for (int i = 0; i < options.count(); ++i) { \
-      fakeArgv[i] = options[i]; \
-  } \
-  return QTest::qExec(&tc, options.count(), fakeArgv); \
+    FakeAkonadiServer::instance(); \
+    AkCoreApplication app(argc, argv); \
+    boost::program_options::options_description testOptions("Unit Test"); \
+    testOptions.add_options() \
+        ("no-cleanup", "Don't clean up the temporary runtime environment"); \
+    app.addCommandLineOptions(testOptions); \
+    app.parseCommandLine(); \
+    /* HACK: Supernasty hack to remove AkCoreApplication options from argv before \
+       it's passed to QTest, which will abort on custom-defined options */ \
+    QList<char*> options; \
+    for (int i = 0; i < argc; ++i) { \
+        if (qstrcmp(argv[i], "--no-cleanup") > 0) { \
+              options << argv[i]; \
+        } \
+    } \
+    TestObject tc; \
+    char **fakeArgv = (char **) malloc(options.count()); \
+    for (int i = 0; i < options.count(); ++i) { \
+        fakeArgv[i] = options[i]; \
+    } \
+    return QTest::qExec(&tc, options.count(), fakeArgv); \
 }
 
 // Takes from Qt 5
@@ -109,9 +109,9 @@ do {\
         return false;\
 } while (0)
 
-inline void akTestSetInstanceIdentifier( const QString &instanceId )
+inline void akTestSetInstanceIdentifier(const QString &instanceId)
 {
-  AkApplication::setInstanceIdentifier( instanceId );
+    AkApplication::setInstanceIdentifier(instanceId);
 }
 
 #include <libs/notificationmessagev3_p.h>
