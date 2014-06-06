@@ -126,7 +126,7 @@ public:
      * This call might block.
      * @return true if a literal follows
      */
-    bool hasLiteral( bool requestData = true);
+    bool hasLiteral(bool requestData = true);
 
     /**
      * Read the next literal sequence. This might or might not be the full data. Example code to read a literal would be:
