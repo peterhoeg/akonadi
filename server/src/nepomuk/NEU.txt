@@ -1,6 +1,0 @@
-dbusoperators.cpp
-dbusoperators.h
-queryserviceclient.cpp
-queryserviceclient.h
-result.cpp
-result.h
