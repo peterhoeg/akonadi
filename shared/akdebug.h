@@ -32,7 +32,7 @@
      * Writes an error messasge to stdout/err and to the server error log.
      */
     QDebug akError();
-    
+
     /**
      * Writes a debug message to stdout/err.
      */
@@ -44,15 +44,15 @@
     }
 #endif
 
-/**
- * Init and rotate error logs.
- */
-void akInit(const QString &appName);
+    /**
+     * Init and rotate error logs.
+     */
+    void akInit(const QString &appName);
 
-/**
- * Returns the contents of @p name environment variable if it is defined,
- * or @p defaultValue otherwise.
- */
-QString getEnv(const char *name, const QString &defaultValue = QString());
+    /**
+     * Returns the contents of @p name environment variable if it is defined,
+     * or @p defaultValue otherwise.
+     */
+    QString getEnv(const char *name, const QString &defaultValue = QString());
 
 #endif

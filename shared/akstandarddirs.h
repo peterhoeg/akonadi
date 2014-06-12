@@ -27,16 +27,24 @@
  * @since 1.7
  */
 namespace AkStandardDirs {
-    /** Returns path to the config file @p configFile. */
+    /**
+     * Returns path to the config file @p configFile.
+     */
     QString configFile(const QString &configFile, Akonadi::XdgBaseDirs::FileAccessMode openMode = Akonadi::XdgBaseDirs::ReadOnly);
- 
-    /** Returns the full path to the server config file (akonadiserverrc). */
+
+    /**
+     * Returns the full path to the server config file (akonadiserverrc).
+     */
     QString serverConfigFile(Akonadi::XdgBaseDirs::FileAccessMode openMode = Akonadi::XdgBaseDirs::ReadOnly);
 
-    /** Returns the full path to the connection config file (akonadiconnectionrc). */
+    /**
+     * Returns the full path to the connection config file (akonadiconnectionrc).
+     */
     QString connectionConfigFile(Akonadi::XdgBaseDirs::FileAccessMode openMode = Akonadi::XdgBaseDirs::ReadOnly);
 
-    /** Returns the full path to the agent config file (agentsrc). */
+    /**
+     * Returns the full path to the agent config file (agentsrc).
+     */
     QString agentConfigFile(Akonadi::XdgBaseDirs::FileAccessMode openMode = Akonadi::XdgBaseDirs::ReadOnly);
 
     /**
