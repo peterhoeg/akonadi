@@ -204,7 +204,7 @@ bool Modify::parseStream()
                     ImapParser::parseParenthesizedList(queryArgs.at(i +  1), cols);
                     queryCollections = QString::fromLatin1(ImapParser::join(cols, " "));
                     ++i;
-                } else  if (key == AKONADI_PARAM_PERSISTENTSEARCH_QUERYLANG) {
+                } else if (key == AKONADI_PARAM_PERSISTENTSEARCH_QUERYLANG) {
                     // Ignore query lang
                     ++i;
                 } else if (key == AKONADI_PARAM_REMOTE) {

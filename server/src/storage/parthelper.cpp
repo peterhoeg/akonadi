@@ -86,7 +86,7 @@ void PartHelper::update(Part *part, const QByteArray &data, qint64 dataSize)
                 throw PartHelperException(QString::fromLatin1("Failed to write into '%1', error was '%2'").arg(file.fileName()).arg(file.errorString()));
             }
             file.close();
-        } else  {
+        } else {
             throw PartHelperException(QString::fromLatin1("Could not open '%1' for writing, error was '%2'").arg(file.fileName()).arg(file.errorString()));
         }
 

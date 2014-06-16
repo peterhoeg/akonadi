@@ -33,8 +33,7 @@
 #include <QtDBus/QDBusArgument>
 #include "notificationmessage_p.h"
 
-namespace Akonadi
-{
+namespace Akonadi {
 
 /**
   @internal
