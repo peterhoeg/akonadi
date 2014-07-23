@@ -160,7 +160,6 @@ void NotificationCollector::collectionRemoved(const Collection &collection,
         AkonadiServer::instance()->intervalChecker()->collectionRemoved(collection.id());
     }
     collectionNotification(NotificationMessageV2::Remove, collection, collection.parentId(), -1, resource);
->>>>>>> Coding Style
 }
 
 void NotificationCollector::collectionSubscribed(const Collection &collection,
@@ -246,7 +245,7 @@ void NotificationCollector::itemNotification(NotificationMessageV2::Operation op
                                              const QSet<qint64> &removedTags)
 {
     Collection notificationDestCollection;
-    QMap<Entity::Id, PimItem> vCollections;
+    QMap<Entity::Id, QList<PimItem> > vCollections;
 
     if ((op == NotificationMessageV2::Modify) ||
         (op == NotificationMessageV2::ModifyFlags) ||
@@ -278,7 +277,7 @@ void NotificationCollector::itemNotification(NotificationMessageV2::Operation op
     for (; iter != endIter; ++iter) {
         NotificationMessageV3 copy = msg;
 
-        Q_FOREACH (const PimItem &item, vCollections.values(colId)) {
+        Q_FOREACH (const PimItem &item, iter.value()) {
             copy.addEntity(item.id(), item.remoteId(), item.remoteRevision(), item.mimeType().name());
         }
         copy.setParentCollection(iter.key());

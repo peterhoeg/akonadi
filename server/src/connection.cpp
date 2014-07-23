@@ -97,13 +97,18 @@ Connection::Connection(quintptr socketDescriptor, QObject *parent)
 
     Response greeting;
     greeting.setUntagged();
-    greeting.setString("OK Akonadi Almost IMAP Server [PROTOCOL " AKONADI_PROTOCOL_VERSION "]");
+    greeting.setString("OK Akonadi Almost IMAP Server [PROTOCOL " + QByteArray::number(AKONADI_PROTOCOL_VERSION) + "]");
     // don't send before the event loop is active, since waitForBytesWritten() can cause interesting reentrancy issues
     // TODO should be QueueConnection, but unfortunately that doesn't work (yet), since
     // "this" belongs to the wrong thread, but that requires a slightly larger refactoring
     QMetaObject::invokeMethod(this, "slotResponseAvailable",
                               Qt::DirectConnection,
                               Q_ARG(Akonadi::Server::Response, greeting));
+}
+
+int Connection::protocolVersion()
+{
+  return AKONADI_PROTOCOL_VERSION;
 }
 
 DataStore *Connection::storageBackend()

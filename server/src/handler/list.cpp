@@ -79,7 +79,6 @@ QStack<Collection> List::ancestorsForCollection(const Collection &col)
 
 bool List::listCollection(const Collection &root, int depth, const QStack<Collection> &ancestors)
 {
-<<<<<<< HEAD
     // recursive listing of child collections
     bool childrenFound = false;
     if (depth > 0) {
