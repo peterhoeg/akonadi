@@ -61,7 +61,6 @@ public:
     QScopedPointer<DbInitializer> initializer;
 
 private Q_SLOTS:
-
     void testList_data()
     {
         initializer.reset(new DbInitializer);
@@ -120,6 +119,11 @@ private Q_SLOTS:
         col1.setSyncPref(Akonadi::Server::Tristate::Undefined);
         col1.setIndexPref(Akonadi::Server::Tristate::Undefined);
         col1.update();
+        //Ensure default values were set properly
+        QCOMPARE(col1.enabled(), true);
+        QCOMPARE(col1.displayPref(), Akonadi::Server::Tristate::Undefined);
+        QCOMPARE(col1.syncPref(), Akonadi::Server::Tristate::Undefined);
+        QCOMPARE(col1.indexPref(), Akonadi::Server::Tristate::Undefined);
         Collection col2 = initializer->createCollection("col2", col1);
         col2.setEnabled(false);
         col2.setSyncPref(Akonadi::Server::Tristate::True);
