@@ -114,6 +114,12 @@ private Q_SLOTS:
         initializer.reset(new DbInitializer);
         Resource res = initializer->createResource("testresource");
         Collection col1 = initializer->createCollection("col1");
+        //FIXME Workaround
+        col1.setEnabled(true);
+        col1.setDisplayPref(Akonadi::Server::Tristate::Undefined);
+        col1.setSyncPref(Akonadi::Server::Tristate::Undefined);
+        col1.setIndexPref(Akonadi::Server::Tristate::Undefined);
+        col1.update();
         Collection col2 = initializer->createCollection("col2", col1);
         col2.setEnabled(false);
         col2.setSyncPref(Akonadi::Server::Tristate::True);
@@ -126,6 +132,14 @@ private Q_SLOTS:
         col3.setDisplayPref(Akonadi::Server::Tristate::False);
         col3.setIndexPref(Akonadi::Server::Tristate::False);
         col3.update();
+
+        //FIXME Workaround
+        Collection searchCol = initializer->collection("Search");
+        searchCol.setEnabled(true);
+        searchCol.setDisplayPref(Akonadi::Server::Tristate::Undefined);
+        searchCol.setSyncPref(Akonadi::Server::Tristate::Undefined);
+        searchCol.setIndexPref(Akonadi::Server::Tristate::Undefined);
+        searchCol.update();
 
         QTest::addColumn<QList<QByteArray> >("scenario");
 
