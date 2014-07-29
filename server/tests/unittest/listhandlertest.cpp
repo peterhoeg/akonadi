@@ -114,10 +114,13 @@ private Q_SLOTS:
         Resource res = initializer->createResource("testresource");
         Collection col1 = initializer->createCollection("col1");
         //Ensure default values were set properly
-        QCOMPARE(col1.enabled(), true);
-        QCOMPARE(col1.displayPref(), Akonadi::Server::Tristate::Undefined);
-        QCOMPARE(col1.syncPref(), Akonadi::Server::Tristate::Undefined);
-        QCOMPARE(col1.indexPref(), Akonadi::Server::Tristate::Undefined);
+        if (col1.enabled()) {
+            akFatal() << "Collection not enabled althought that should be the default value";
+        }
+        if(col1.displayPref() == Akonadi::Server::Tristate::Undefined) {
+            akFatal() << "Display pref set to invalid default value";
+        }
+
         Collection col2 = initializer->createCollection("col2", col1);
         col2.setEnabled(false);
         col2.setSyncPref(Akonadi::Server::Tristate::True);
