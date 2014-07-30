@@ -32,11 +32,10 @@ class QSqlDatabase;
 namespace Akonadi {
 namespace Server {
 
-
 enum Tristate {
-  False = 0,
-  True = 1,
-  Undefined = 2
+    False = 0,
+    True = 1,
+    Undefined = 2
 };
 
 /**

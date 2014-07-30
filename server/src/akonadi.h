@@ -77,8 +77,8 @@ private:
     void createDatabase();
     void stopDatabaseProcess();
 
-  protected:
-    AkonadiServer( QObject *parent = 0 );
+protected:
+    AkonadiServer(QObject *parent = 0);
 
     CacheCleaner *mCacheCleaner;
     IntervalCheck *mIntervalChecker;

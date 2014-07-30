@@ -80,7 +80,7 @@ public Q_SLOTS:
      * @param exclusive Exclusive subscribers also receive notifications on referenced collections
      * @return The path we got assigned. Contains identifier.
      */
-    Q_SCRIPTABLE QDBusObjectPath subscribeV3( const QString &identifier, bool serverSideMonitor, bool exclusive );
+    Q_SCRIPTABLE QDBusObjectPath subscribeV3(const QString &identifier, bool serverSideMonitor, bool exclusive);
 
     /**
      * Unsubscribe from this manager.

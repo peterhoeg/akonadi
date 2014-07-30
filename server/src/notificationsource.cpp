@@ -329,11 +329,11 @@ bool NotificationSource::acceptsNotification(const NotificationMessageV3 &notifi
 {
     // session is ignored
     if (mIgnoredSessions.contains(notification.sessionId())) {
-      return false;
+        return false;
     }
 
     if (notification.entities().count() == 0) {
-      return false;
+        return false;
     }
 
     //Only emit notifications for referenced collections if the subscriber is exclusive or monitors the collection
@@ -345,7 +345,7 @@ bool NotificationSource::acceptsNotification(const NotificationMessageV3 &notifi
         }
     } else if (notification.type() == NotificationMessageV2::Items) {
         if (CollectionReferenceManager::instance()->isReferenced(notification.parentCollection())) {
-            return ( mExclusive || isCollectionMonitored(notification.parentCollection()) || isMoveDestinationResourceMonitored(notification));
+            return (mExclusive || isCollectionMonitored(notification.parentCollection()) || isMoveDestinationResourceMonitored(notification));
         }
     }
 

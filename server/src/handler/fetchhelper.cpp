@@ -282,7 +282,7 @@ bool FetchHelper::isScopeLocal(const Scope &scope)
     // so it will pass this check.
     QSqlQuery query = qb.query();
     if (query.size() != 1) {
-      return false;
+        return false;
     }
 
     query.next();

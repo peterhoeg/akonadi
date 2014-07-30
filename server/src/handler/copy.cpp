@@ -90,13 +90,13 @@ bool Copy::parseStream()
         return failureResponse("No valid target specified");
     }
     if (targetCollection.isVirtual()) {
-        return failureResponse( "Copying items into virtual collections is not allowed" );
+        return failureResponse("Copying items into virtual collections is not allowed");
     }
 
     SelectQueryBuilder<PimItem> qb;
     ItemQueryHelper::itemSetToQuery(set, qb);
     if (!qb.exec()) {
-        return failureResponse( "Unable to retrieve items" );
+        return failureResponse("Unable to retrieve items");
     }
     PimItem::List items = qb.result();
     qb.query().finish();

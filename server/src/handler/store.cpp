@@ -141,29 +141,28 @@ bool Store::deleteTags(const PimItem::List &items, const Tag::List &tags)
     return true;
 }
 
-bool Store::processTagsChange( Store::Operation op, const PimItem::List &items,
-                               const Tag::List &tags, QSet<QByteArray> &changes )
+bool Store::processTagsChange(Store::Operation op, const PimItem::List &items,
+                              const Tag::List &tags, QSet<QByteArray> &changes)
 {
-  bool tagsChanged = true;
-  if ( op == Replace ) {
-    tagsChanged = replaceTags( items, tags );
-  } else if ( op == Add ) {
-    if ( !addTags( items, tags, tagsChanged ) ) {
-      return failureResponse( "Unable to add item tags." );
+    bool tagsChanged = true;
+    if (op == Replace) {
+        tagsChanged = replaceTags(items, tags);
+    } else if (op == Add) {
+        if (!addTags(items, tags, tagsChanged)) {
+            return failureResponse("Unable to add item tags.");
+        }
+    } else if (op == Delete) {
+        if (!(tagsChanged = deleteTags(items, tags))) {
+            return failureResponse("Unable to remove item tags.");
+        }
     }
-  } else if ( op == Delete ) {
-    if ( !( tagsChanged = deleteTags( items, tags ) ) ) {
-      return failureResponse( "Unable to remove item tags." );
+
+    if (tagsChanged && !changes.contains(AKONADI_PARAM_TAGS)) {
+        changes << AKONADI_PARAM_TAGS;
     }
-  }
 
-  if ( tagsChanged && !changes.contains( AKONADI_PARAM_TAGS ) ) {
-    changes << AKONADI_PARAM_TAGS;
-  }
-
-  return true;
+    return true;
 }
-
 
 bool Store::parseStream()
 {

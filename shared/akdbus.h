@@ -29,40 +29,40 @@ class QString;
  */
 namespace AkDBus {
 /** D-Bus service types used by the Akonadi server processes. */
-    enum ServiceType {
-        Server,
-        Control,
-        ControlLock,
-        AgentServer,
-        StorageJanitor,
-        UpgradeIndicator
-    };
+enum ServiceType {
+    Server,
+    Control,
+    ControlLock,
+    AgentServer,
+    StorageJanitor,
+    UpgradeIndicator
+};
 
-    /**
-     * Returns the service name for the given @p serviceType.
-     */
-    QString serviceName(ServiceType serviceType);
+/**
+ * Returns the service name for the given @p serviceType.
+ */
+QString serviceName(ServiceType serviceType);
 
-    /** Known D-Bus service name types for agents. */
-    enum AgentType {
-        Unknown,
-        Agent,
-        Resource,
-        Preprocessor
-    };
+/** Known D-Bus service name types for agents. */
+enum AgentType {
+    Unknown,
+    Agent,
+    Resource,
+    Preprocessor
+};
 
-    /**
-     * Parses a D-Bus service name and checks if it belongs to an agent of this instance.
-     * @param serviceName The service name to parse.
-     * @param agentType Output parameter containing the agent type.
-     * @return The identifier of the agent, empty string if that's not an agent (or an agent of a different Akonadi instance)
-     */
-    QString parseAgentServiceName(const QString &serviceName, AkDBus::AgentType &agentType);
+/**
+ * Parses a D-Bus service name and checks if it belongs to an agent of this instance.
+ * @param serviceName The service name to parse.
+ * @param agentType Output parameter containing the agent type.
+ * @return The identifier of the agent, empty string if that's not an agent (or an agent of a different Akonadi instance)
+ */
+QString parseAgentServiceName(const QString &serviceName, AkDBus::AgentType &agentType);
 
-    /**
-     * Returns the D-Bus service name of the agent @p agentIdentifier for type @p agentType.
-     */
-    QString agentServiceName(const QString &agentIdentifier, AkDBus::AgentType agentType);
+/**
+ * Returns the D-Bus service name of the agent @p agentIdentifier for type @p agentType.
+ */
+QString agentServiceName(const QString &agentIdentifier, AkDBus::AgentType agentType);
 }
 
 #endif

@@ -101,19 +101,19 @@ bool List::listCollection(const Collection &root, int depth, const QStack<Collec
         }
         //Don't include the collection when only looking for collections to display/index/sync
         if (mCollectionsToDisplay &&
-                (((root.displayPref() == Tristate::Undefined) && !root.enabled()) ||
-                  (root.displayPref() == Tristate::False))) {
+            (((root.displayPref() == Tristate::Undefined) && !root.enabled()) ||
+             (root.displayPref() == Tristate::False))) {
             return false;
         }
         if (mCollectionsToIndex &&
-                (((root.indexPref() == Tristate::Undefined) && !root.enabled()) ||
-                  (root.indexPref() == Tristate::False))) {
+            (((root.indexPref() == Tristate::Undefined) && !root.enabled()) ||
+             (root.indexPref() == Tristate::False))) {
             return false;
         }
         //Single collection sync will still work since that is using a base fetch
         if (mCollectionsToSynchronize &&
-                (((root.syncPref() == Tristate::Undefined) && !root.enabled()) ||
-                  (root.syncPref() == Tristate::False))) {
+            (((root.syncPref() == Tristate::Undefined) && !root.enabled()) ||
+             (root.syncPref() == Tristate::False))) {
             return false;
         }
     }
@@ -129,7 +129,7 @@ bool List::listCollection(const Collection &root, int depth, const QStack<Collec
     // write out collection details
     Collection dummy = root;
     DataStore *db = connection()->storageBackend();
-    db->activeCachePolicy( dummy );
+    db->activeCachePolicy(dummy);
     const QByteArray b = HandlerHelper::collectionToByteArray(dummy, hidden, mIncludeStatistics, mAncestorDepth, ancestors, isReferencedFromSession);
 
     Response response;
@@ -140,43 +140,43 @@ bool List::listCollection(const Collection &root, int depth, const QStack<Collec
     return true;
 }
 
-static Query::Condition filterCondition( const QString &column )
+static Query::Condition filterCondition(const QString &column)
 {
-  Query::Condition orCondition( Query::Or );
-  orCondition.addValueCondition( column, Query::Equals, Akonadi::Server::Tristate::True );
-  Query::Condition andCondition( Query::And );
-  andCondition.addValueCondition( column, Query::Equals, Akonadi::Server::Tristate::Undefined );
-  andCondition.addValueCondition( Collection::enabledFullColumnName(), Query::Equals, true );
-  orCondition.addCondition( andCondition );
-  orCondition.addValueCondition( Collection::referencedFullColumnName(), Query::Equals, true );
-  return orCondition;
+    Query::Condition orCondition(Query::Or);
+    orCondition.addValueCondition(column, Query::Equals, Akonadi::Server::Tristate::True);
+    Query::Condition andCondition(Query::And);
+    andCondition.addValueCondition(column, Query::Equals, Akonadi::Server::Tristate::Undefined);
+    andCondition.addValueCondition(Collection::enabledFullColumnName(), Query::Equals, true);
+    orCondition.addCondition(andCondition);
+    orCondition.addValueCondition(Collection::referencedFullColumnName(), Query::Equals, true);
+    return orCondition;
 }
 
-Collection::List List::retrieveChildren( const QVariant &value )
+Collection::List List::retrieveChildren(const QVariant &value)
 {
-  SelectQueryBuilder<Collection> qb;
-  if ( value.isNull() ) {
-    qb.addValueCondition( Collection::parentIdColumn(), Query::Is, QVariant() );
-  } else {
-    qb.addValueCondition( Collection::parentIdColumn(), Query::Equals, value );
-  }
+    SelectQueryBuilder<Collection> qb;
+    if (value.isNull()) {
+        qb.addValueCondition(Collection::parentIdColumn(), Query::Is, QVariant());
+    } else {
+        qb.addValueCondition(Collection::parentIdColumn(), Query::Equals, value);
+    }
 
-  if ( mEnabledCollections ) {
-    Query::Condition orCondition( Query::Or );
-    orCondition.addValueCondition( Collection::enabledFullColumnName(), Query::Equals, true );
-    orCondition.addValueCondition( Collection::referencedFullColumnName(), Query::Equals, true );
-    qb.addCondition(orCondition);
-  } else if ( mCollectionsToSynchronize ) {
-    qb.addCondition( filterCondition( Collection::syncPrefFullColumnName() ) );
-  } else if ( mCollectionsToDisplay ) {
-    qb.addCondition( filterCondition( Collection::displayPrefFullColumnName() ) );
-  } else if ( mCollectionsToIndex ) {
-    qb.addCondition( filterCondition( Collection::indexPrefFullColumnName() ) );
-  }
-  if ( !qb.exec() ) {
-    throw HandlerException( "Unable to retrieve collection for listing" );
-  }
-  return qb.result();
+    if (mEnabledCollections) {
+        Query::Condition orCondition(Query::Or);
+        orCondition.addValueCondition(Collection::enabledFullColumnName(), Query::Equals, true);
+        orCondition.addValueCondition(Collection::referencedFullColumnName(), Query::Equals, true);
+        qb.addCondition(orCondition);
+    } else if (mCollectionsToSynchronize) {
+        qb.addCondition(filterCondition(Collection::syncPrefFullColumnName()));
+    } else if (mCollectionsToDisplay) {
+        qb.addCondition(filterCondition(Collection::displayPrefFullColumnName()));
+    } else if (mCollectionsToIndex) {
+        qb.addCondition(filterCondition(Collection::indexPrefFullColumnName()));
+    }
+    if (!qb.exec()) {
+        throw HandlerException("Unable to retrieve collection for listing");
+    }
+    return qb.result();
 }
 
 bool List::parseStream()
@@ -295,7 +295,7 @@ bool List::parseStream()
             }
             col = CollectionQueryHelper::resolveHierarchicalRID(mScope.ridChain(), connection()->context()->resource().id());
         } else {
-            throw HandlerException( "WTF" );
+            throw HandlerException("WTF");
         }
 
         if (!col.isValid()) {

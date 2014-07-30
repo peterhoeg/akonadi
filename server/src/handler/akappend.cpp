@@ -104,8 +104,8 @@ bool AkAppend::buildPimItem(PimItem &item, Collection &col,
     if (!col.isValid()) {
         throw HandlerException(QByteArray("Unknown collection for '") + mailbox + QByteArray("'."));
     }
-    if ( col.isVirtual() ) {
-      throw HandlerException( "Cannot append item into virtual collection" );
+    if (col.isVirtual()) {
+        throw HandlerException("Cannot append item into virtual collection");
     }
 
     QByteArray mt;
@@ -261,7 +261,7 @@ bool AkAppend::insertItem(PimItem &item, const Collection &parentCol,
                           const QVector<QByteArray> &itemTagsGID)
 {
     if (!item.insert()) {
-      return failureResponse("Failed to append item");
+        return failureResponse("Failed to append item");
     }
 
     // set message flags
@@ -269,7 +269,7 @@ bool AkAppend::insertItem(PimItem &item, const Collection &parentCol,
     const Flag::List flagList = HandlerHelper::resolveFlags(itemFlags);
     bool flagsChanged = false;
     if (!DataStore::self()->appendItemsFlags(PimItem::List() << item, flagList, &flagsChanged, false, parentCol, true)) {
-      return failureResponse("Unable to append item flags.");
+        return failureResponse("Unable to append item flags.");
     }
 
     Tag::List tagList;
@@ -299,7 +299,7 @@ bool AkAppend::insertItem(PimItem &item, const Collection &parentCol,
                 throw HandlerException("Syntax error");
             }
 
-            if (!streamer.stream( command, false, partName, partSize)) {
+            if (!streamer.stream(command, false, partName, partSize)) {
                 throw HandlerException(streamer.error());
             }
 
@@ -308,8 +308,8 @@ bool AkAppend::insertItem(PimItem &item, const Collection &parentCol,
 
         // TODO: Try to avoid this addition query
         if (partSizes > item.size()) {
-          item.setSize(partSizes);
-          item.update();
+            item.setSize(partSizes);
+            item.update();
         }
     } else {
         if (!readParts(item)) {

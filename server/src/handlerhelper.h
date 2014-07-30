@@ -87,7 +87,7 @@ public:
     */
     static QByteArray cachePolicyToByteArray(const Collection &col);
 
-    static QByteArray tristateToByteArray( const Tristate &tristate );
+    static QByteArray tristateToByteArray(const Tristate &tristate);
 
     /**
       Returns the protocol representation of the given collection.

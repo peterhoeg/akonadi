@@ -50,7 +50,7 @@ QByteArray Response::asString() const
 
 Response::ResultCode Response::resultCode() const
 {
-  return m_resultCode;
+    return m_resultCode;
 }
 
 void Response::setSuccess()

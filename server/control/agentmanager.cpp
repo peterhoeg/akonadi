@@ -685,62 +685,62 @@ void AgentManager::serviceOwnerChanged(const QString &name, const QString &oldOw
         break;
     }
     case AkDBus::Preprocessor: {
-        // A preprocessor service went up or down
+       // A preprocessor service went up or down
 
-        // If the preprocessor is going up then the org.freedesktop.Akonadi.Agent.* interface
-        // should be already up (as it's registered before the preprocessor one).
-        // So if we don't know about the preprocessor as agent instance
-        // then it's not our preprocessor.
+       // If the preprocessor is going up then the org.freedesktop.Akonadi.Agent.* interface
+       // should be already up (as it's registered before the preprocessor one).
+       // So if we don't know about the preprocessor as agent instance
+       // then it's not our preprocessor.
 
-        // If the preprocessor is going down then either the agent interface already
-        // went down (and it has been already unregistered on the manager side)
-        // or it's still registered as agent and WE have to unregister it.
-        // The order of interface deletions depends on Qt but we handle both cases.
+       // If the preprocessor is going down then either the agent interface already
+       // went down (and it has been already unregistered on the manager side)
+       // or it's still registered as agent and WE have to unregister it.
+       // The order of interface deletions depends on Qt but we handle both cases.
 
-        // Check if we "know" about it.
-        akDebug() << "Preprocessor " << agentIdentifier << " is going up or down...";
+       // Check if we "know" about it.
+       akDebug() << "Preprocessor " << agentIdentifier << " is going up or down...";
 
-        if (!mAgentInstances.contains(agentIdentifier)) {
-            akDebug() << "But it isn't registered as agent... not mine (anymore?)";
-            return; // not our agent (?)
-        }
+       if (!mAgentInstances.contains(agentIdentifier)) {
+           akDebug() << "But it isn't registered as agent... not mine (anymore?)";
+           return; // not our agent (?)
+       }
 
-        org::freedesktop::Akonadi::PreprocessorManager preProcessorManager(
-            AkDBus::serviceName(AkDBus::Server),
-            QLatin1String("/PreprocessorManager"),
-            QDBusConnection::sessionBus(),
-            this);
+       org::freedesktop::Akonadi::PreprocessorManager preProcessorManager(
+           AkDBus::serviceName(AkDBus::Server),
+           QLatin1String("/PreprocessorManager"),
+           QDBusConnection::sessionBus(),
+           this);
 
-        if (!preProcessorManager.isValid()) {
-            akError() << Q_FUNC_INFO << "Could not connect to PreprocessorManager via D-Bus:" << preProcessorManager.lastError().message();
-        } else {
-            if (newOwner.isEmpty()) {
-                // The preprocessor went down. Unregister it on server side.
+       if (!preProcessorManager.isValid()) {
+           akError() << Q_FUNC_INFO << "Could not connect to PreprocessorManager via D-Bus:" << preProcessorManager.lastError().message();
+       } else {
+           if (newOwner.isEmpty()) {
+               // The preprocessor went down. Unregister it on server side.
 
-                preProcessorManager.unregisterInstance(agentIdentifier);
+               preProcessorManager.unregisterInstance(agentIdentifier);
 
-            } else {
+           } else {
 
-                // The preprocessor went up. Register it on server side.
+               // The preprocessor went up. Register it on server side.
 
-                if (!mAgentInstances.value(agentIdentifier)->obtainPreprocessorInterface()) {
-                    // Hm.. couldn't hook up its preprocessor interface..
-                    // Make sure we don't have it in the preprocessor chain
-                    qWarning() << "Couldn't obtain preprocessor interface for instance" << agentIdentifier;
+               if (!mAgentInstances.value(agentIdentifier)->obtainPreprocessorInterface()) {
+                   // Hm.. couldn't hook up its preprocessor interface..
+                   // Make sure we don't have it in the preprocessor chain
+                   qWarning() << "Couldn't obtain preprocessor interface for instance" << agentIdentifier;
 
-                    preProcessorManager.unregisterInstance(agentIdentifier);
-                    return;
-                }
+                   preProcessorManager.unregisterInstance(agentIdentifier);
+                   return;
+               }
 
-                akDebug() << "Registering preprocessor instance" << agentIdentifier;
+               akDebug() << "Registering preprocessor instance" << agentIdentifier;
 
-                // Add to the preprocessor chain
-                preProcessorManager.registerInstance(agentIdentifier);
-            }
-        }
+               // Add to the preprocessor chain
+               preProcessorManager.registerInstance(agentIdentifier);
+           }
+       }
 
-        break;
-    }
+       break;
+    
     default:
         break;
     }

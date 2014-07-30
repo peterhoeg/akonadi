@@ -293,7 +293,7 @@ QString PartHelper::resolveAbsolutePath(const QByteArray &data)
     return fileName;
 }
 
-QString PartHelper::updateFileNameRevision(const QString& fileName)
+QString PartHelper::updateFileNameRevision(const QString &fileName)
 {
     QString fn = fileName;
     QString rev = QString::fromAscii("_r0");

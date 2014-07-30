@@ -75,11 +75,11 @@ public:
             "\" MIMETYPE () REMOTEID \"" + col.remoteId().toLatin1() +
             "\" REMOTEREVISION \"\" RESOURCE \"" + mResource.name().toLatin1() +
             "\" VIRTUAL 0 CACHEPOLICY (INHERIT true INTERVAL -1 CACHETIMEOUT -1 SYNCONDEMAND false LOCALPARTS (ALL))";
-            if (col.referenced()) {
-                s += " REFERENCED TRUE";
-            }
-            s += " ENABLED " + toByteArray(col.enabled()) + " DISPLAY DEFAULT SYNC DEFAULT INDEX DEFAULT )";
-            return s;
+        if (col.referenced()) {
+            s += " REFERENCED TRUE";
+        }
+        s += " ENABLED " + toByteArray(col.enabled()) + " DISPLAY DEFAULT SYNC DEFAULT INDEX DEFAULT )";
+        return s;
     }
 
     Collection collection(const char *name) {
@@ -121,7 +121,6 @@ public:
         FakeAkonadiServer::instance()->quit();
     }
 
-
 private Q_SLOTS:
     void testModify_data()
     {
@@ -139,17 +138,17 @@ private Q_SLOTS:
         {
             QList<QByteArray> scenario;
             scenario << FakeAkonadiServer::defaultScenario()
-                    << "C: 2 LIST 0 1 (RESOURCE \"testresource\" ENABLED TRUE) ()"
-                    << initializer.listResponse(initializer.collection("col1"))
-                    << "S: 2 OK List completed";
+                     << "C: 2 LIST 0 1 (RESOURCE \"testresource\" ENABLED TRUE) ()"
+                     << initializer.listResponse(initializer.collection("col1"))
+                     << "S: 2 OK List completed";
             QTest::newRow("list before referenced first level") << scenario << QList<Akonadi::NotificationMessageV3>() << Collection::List();
         }
 
         {
             QList<QByteArray> scenario;
             scenario << FakeAkonadiServer::defaultScenario()
-                    << "C: 2 MODIFY " + QByteArray::number(initializer.collection("col2").id()) + " REFERENCED TRUE"
-                    << "S: 2 OK MODIFY done";
+                     << "C: 2 MODIFY " + QByteArray::number(initializer.collection("col2").id()) + " REFERENCED TRUE"
+                     << "S: 2 OK MODIFY done";
 
             Akonadi::NotificationMessageV3 notification = notificationTemplate;
             notification.setItemParts(QSet<QByteArray>() << "REFERENCED");
@@ -164,9 +163,9 @@ private Q_SLOTS:
             col2.setReferenced(true);
             QList<QByteArray> scenario;
             scenario << FakeAkonadiServer::defaultScenario()
-                    << "C: 2 LIST " + QByteArray::number(col2.id()) + " 0 (ENABLED TRUE) ()"
-                    << initializer.listResponse(col2)
-                    << "S: 2 OK List completed";
+                     << "C: 2 LIST " + QByteArray::number(col2.id()) + " 0 (ENABLED TRUE) ()"
+                     << initializer.listResponse(col2)
+                     << "S: 2 OK List completed";
 
             QTest::newRow("list referenced base") << scenario << QList<Akonadi::NotificationMessageV3>() << Collection::List();
         }
@@ -175,17 +174,17 @@ private Q_SLOTS:
             col2.setReferenced(true);
             QList<QByteArray> scenario;
             scenario << FakeAkonadiServer::defaultScenario()
-                    << "C: 2 LIST 0 1 (RESOURCE \"testresource\" ENABLED TRUE) ()"
-                    << initializer.listResponse(initializer.collection("col1"))
-                    << initializer.listResponse(col2)
-                    << "S: 2 OK List completed";
+                     << "C: 2 LIST 0 1 (RESOURCE \"testresource\" ENABLED TRUE) ()"
+                     << initializer.listResponse(initializer.collection("col1"))
+                     << initializer.listResponse(col2)
+                     << "S: 2 OK List completed";
             QTest::newRow("list referenced first level") << scenario << QList<Akonadi::NotificationMessageV3>() << Collection::List();
         }
         {
             QList<QByteArray> scenario;
             scenario << FakeAkonadiServer::defaultScenario()
-                    << "C: 2 MODIFY " + QByteArray::number(initializer.collection("col2").id()) + " REFERENCED FALSE"
-                    << "S: 2 OK MODIFY done";
+                     << "C: 2 MODIFY " + QByteArray::number(initializer.collection("col2").id()) + " REFERENCED FALSE"
+                     << "S: 2 OK MODIFY done";
 
             Akonadi::NotificationMessageV3 notification = notificationTemplate;
             notification.setItemParts(QSet<QByteArray>() << "REFERENCED");

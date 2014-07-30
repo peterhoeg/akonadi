@@ -203,14 +203,14 @@ void DbConfigPostgresql::startInternalServer()
 
     // postgres data directory not initialized yet, so call initdb on it
     if (!QFile::exists(QString::fromLatin1("%1/PG_VERSION").arg(mPgData))) {
-        #ifdef Q_OS_LINUX
+#ifdef Q_OS_LINUX
         // It is recommended to disable CoW feature when running on Btrfs to improve
         // database performance. This only has effect when done on empty directory,
         // so we only call this before calling initdb
         if (Utils::getDirectoryFileSystem(mPgData) == QLatin1String("btrfs")) {
             Utils::disableCoW(mPgData);
         }
-        #endif
+#endif
 
         // call 'initdb --pgdata=/home/user/.local/share/akonadi/data_db'
         const QString command = QString::fromLatin1("%1").arg(mInitDbPath);

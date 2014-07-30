@@ -195,7 +195,7 @@ void DbConfigMysql::startInternalServer()
         akFatal() << "Did not find MySQL server default configuration (mysql-global.conf)";
     }
 
-    #ifdef Q_OS_LINUX
+#ifdef Q_OS_LINUX
     // It is recommended to disable CoW feature when running on Btrfs to improve
     // database performance. Disabling CoW only has effect on empty directory (since
     // it affects only new files), so we check whether MySQL has not yet been initialized.
@@ -205,7 +205,7 @@ void DbConfigMysql::startInternalServer()
             Utils::disableCoW(dataDir);
         }
     }
-    #endif
+#endif
 
     bool confUpdate = false;
     QFile actualFile(actualConfig);
@@ -236,7 +236,7 @@ void DbConfigMysql::startInternalServer()
     // our config file somehow ends up being world-writable on some systems for no
     // apparent reason nevertheless, so fix that
     const QFile::Permissions allowedPerms = actualFile.permissions()
-                                            &(QFile::ReadOwner | QFile::WriteOwner | QFile::ReadGroup | QFile::WriteGroup | QFile::ReadOther);
+                                            & (QFile::ReadOwner | QFile::WriteOwner | QFile::ReadGroup | QFile::WriteGroup | QFile::ReadOther);
     if (allowedPerms != actualFile.permissions()) {
         actualFile.setPermissions(allowedPerms);
     }

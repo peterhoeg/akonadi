@@ -44,10 +44,10 @@ AkApplication::~AkApplication()
 {
 }
 
-AkApplication* AkApplication::instance()
+AkApplication *AkApplication::instance()
 {
-  Q_ASSERT( sInstance );
-  return sInstance;
+    Q_ASSERT(sInstance);
+    return sInstance;
 }
 
 void AkApplication::init()

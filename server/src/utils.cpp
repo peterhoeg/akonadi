@@ -199,7 +199,7 @@ QString Utils::getDirectoryFileSystem(const QString &directory)
 #endif
 }
 
-void Utils::disableCoW(const QString& path)
+void Utils::disableCoW(const QString &path)
 {
 #ifndef Q_OS_LINUX
     Q_UNUSED(path);
@@ -207,17 +207,17 @@ void Utils::disableCoW(const QString& path)
     qDebug() << "Detected Btrfs, disabling copy-on-write on database files";
 
     // from linux/fs.h, so that Akonadi does not depend on Linux header files
-    #ifndef FS_IOC_GETFLAGS
-    #define FS_IOC_GETFLAGS     _IOR('f', 1, long)
-    #endif
-    #ifndef FS_IOC_SETFLAGS
-    #define FS_IOC_SETFLAGS     _IOW('f', 2, long)
-    #endif
+#ifndef FS_IOC_GETFLAGS
+#define FS_IOC_GETFLAGS     _IOR('f', 1, long)
+#endif
+#ifndef FS_IOC_SETFLAGS
+#define FS_IOC_SETFLAGS     _IOW('f', 2, long)
+#endif
 
     // Disable COW on file
-    #ifndef FS_NOCOW_FL
-    #define FS_NOCOW_FL         0x00800000
-    #endif
+#ifndef FS_NOCOW_FL
+#define FS_NOCOW_FL         0x00800000
+#endif
 
     ulong flags = 0;
     const int fd = open(qPrintable(path), O_RDONLY);

@@ -125,7 +125,7 @@ void NepomukSearchEngine::addSearch(const Collection &collection)
     QHash<QString, QString> encodedRps;
     encodedRps.insert(QString::fromLatin1("reqProp1"),
                       QUrl(QString::fromLatin1("http://akonadi-project.org/ontologies/aneo#akonadiItemId")).toString());
-                      //FIXME hack because the reqProp is not passed to here by the caller
+    //FIXME hack because the reqProp is not passed to here by the caller
     query->query(collection.queryString(), encodedRps);
 }
 

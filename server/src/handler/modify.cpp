@@ -46,16 +46,16 @@ Modify::Modify(Scope::SelectionScope scope)
 {
 }
 
-static Tristate getTristateValue( const QByteArray &line,  int &pos )
+static Tristate getTristateValue(const QByteArray &line,  int &pos)
 {
-  QByteArray tmp;
-  pos = ImapParser::parseString( line, tmp, pos );
-  if ( tmp == "TRUE" ){
-    return Tristate::True;
-  } else if ( tmp == "FALSE" ){
-    return Tristate::False;
-  }
-  return Tristate::Undefined;
+    QByteArray tmp;
+    pos = ImapParser::parseString(line, tmp, pos);
+    if (tmp == "TRUE") {
+        return Tristate::True;
+    } else if (tmp == "FALSE") {
+        return Tristate::False;
+    }
+    return Tristate::Undefined;
 }
 
 bool Modify::parseStream()
@@ -241,19 +241,19 @@ bool Modify::parseStream()
         } else if (type == AKONADI_PARAM_SYNC) {
             const Tristate tristate = getTristateValue(line, pos);
             if (tristate != collection.syncPref()) {
-                collection.setSyncPref (tristate);
+                collection.setSyncPref(tristate);
                 changes.append(AKONADI_PARAM_SYNC);
             }
         } else if (type == AKONADI_PARAM_DISPLAY) {
             const Tristate tristate = getTristateValue(line, pos);
             if (tristate != collection.displayPref()) {
-                collection.setDisplayPref (tristate);
+                collection.setDisplayPref(tristate);
                 changes.append(AKONADI_PARAM_DISPLAY);
             }
         } else if (type == AKONADI_PARAM_INDEX) {
             const Tristate tristate = getTristateValue(line, pos);
             if (tristate != collection.indexPref()) {
-                collection.setIndexPref (tristate);
+                collection.setIndexPref(tristate);
                 changes.append(AKONADI_PARAM_INDEX);
             }
         } else if (type == AKONADI_PARAM_REFERENCED) {

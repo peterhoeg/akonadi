@@ -87,4 +87,3 @@ void ClientCapabilities::setDirectStreaming(bool directStreaming)
 {
     m_directStreaming = directStreaming;
 }
-

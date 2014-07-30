@@ -46,7 +46,7 @@ bool Subscribe::parseStream()
         }
         Collection col = HandlerHelper::collectionFromIdOrName(buffer);
         if (!col.isValid()) {
-            return failureResponse( "Invalid collection" );
+            return failureResponse("Invalid collection");
         }
         if (col.enabled() == mSubscribe) {
             continue;

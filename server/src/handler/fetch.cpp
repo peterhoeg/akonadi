@@ -46,7 +46,7 @@ bool Fetch::parseStream()
     connection()->context()->parseContext(m_streamParser);
     // We require context in case we do RID fetch
     if (connection()->context()->isEmpty() && mScope.scope() == Scope::Rid) {
-        throw HandlerException( "No FETCH context specified" );
+        throw HandlerException("No FETCH context specified");
     }
 
     CacheCleanerInhibitor inhibitor;

@@ -50,8 +50,8 @@ public:
     bool akAppendStreaming() const;
     void setAkAppendStreaming(bool akAppendStreaming);
 
-  bool directStreaming() const;
-  void setDirectStreaming( bool directStreaming );
+    bool directStreaming() const;
+    void setDirectStreaming(bool directStreaming);
 
 private:
     int m_notificationMessageVersion;

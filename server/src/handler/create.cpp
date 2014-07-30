@@ -42,14 +42,14 @@ Create::Create(Scope::SelectionScope scope)
 {
 }
 
-static Tristate getTristateValue( const QByteArray &value )
+static Tristate getTristateValue(const QByteArray &value)
 {
-  if ( value == "TRUE" ){
-    return Tristate::True;
-  } else if ( value == "FALSE" ){
-    return Tristate::False;
-  }
-  return Tristate::Undefined;
+    if (value == "TRUE") {
+        return Tristate::True;
+    } else if (value == "FALSE") {
+        return Tristate::False;
+    }
+    return Tristate::Undefined;
 }
 
 bool Create::parseStream()

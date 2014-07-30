@@ -150,7 +150,7 @@ bool TagAppend::parseStream()
             ret = rel.insert();
         }
         if (!ret) {
-            throw HandlerException( "Failed to store tag remote ID" );
+            throw HandlerException("Failed to store tag remote ID");
         }
     }
 

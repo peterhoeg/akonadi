@@ -339,7 +339,7 @@ private Q_SLOTS:
     void sendKeepAliveQuery();
 
 protected:
-    static QThreadStorage<DataStore*> sInstances;
+    static QThreadStorage<DataStore *> sInstances;
 
     QString m_connectionName;
     QSqlDatabase m_database;

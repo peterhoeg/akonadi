@@ -397,7 +397,7 @@ Tag::List HandlerHelper::resolveTagsByGID(const QVector<QByteArray> &tagsGIDs)
     return tagList;
 }
 
-Tag::List HandlerHelper::resolveTagsByRID(const QVector< QByteArray >& tagsRIDs, CommandContext* context)
+Tag::List HandlerHelper::resolveTagsByRID(const QVector< QByteArray > &tagsRIDs, CommandContext *context)
 {
     Tag::List tags;
     if (tagsRIDs.isEmpty()) {

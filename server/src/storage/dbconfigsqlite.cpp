@@ -149,7 +149,7 @@ void DbConfigSqlite::setup()
         dir.mkpath(finfo.path());
     }
 
-    #ifdef Q_OS_LINUX
+#ifdef Q_OS_LINUX
     QFile dbFile(mDatabaseName);
     // It is recommended to disable CoW feature when running on Btrfs to improve
     // database performance. It does not have any effect on non-empty files, so
@@ -159,7 +159,7 @@ void DbConfigSqlite::setup()
             Utils::disableCoW(mDatabaseName);
         }
     }
-    #endif
+#endif
 
     db.setDatabaseName(mDatabaseName);
     if (!db.open()) {

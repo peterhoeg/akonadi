@@ -32,11 +32,11 @@ using namespace Akonadi;
 using namespace Akonadi::Server;
 
 ImapStreamParser::ImapStreamParser(QIODevice *socket)
-  : m_socket(socket)
-  , m_position(0)
-  , m_literalSize(0)
-  , m_peeking(false )
-  , m_timeout(30 * 1000)
+    : m_socket(socket)
+    , m_position(0)
+    , m_literalSize(0)
+    , m_peeking(false)
+    , m_timeout(30 * 1000)
 {
 }
 
@@ -46,7 +46,7 @@ ImapStreamParser::~ImapStreamParser()
 
 void ImapStreamParser::setWaitTimeout(int msecs)
 {
-  m_timeout = msecs;
+    m_timeout = msecs;
 }
 
 QString ImapStreamParser::readUtf8String()
@@ -596,10 +596,8 @@ QByteArray ImapStreamParser::parseQuotedString()
 
             ++i;
         }
-    }
-
-    // unquoted string
-    else {
+    } else {
+        // unquoted string
         bool reachedInputEnd = true;
         int i = m_position;
         Q_FOREVER {
@@ -783,12 +781,12 @@ QByteArray ImapStreamParser::readUntilCommandEnd()
         }
 
         if ((i == m_data.length() && paranthesisBalance == 0) || m_data[i] == '\n'  || m_data[i] == '\r') {
-              // Make sure we return \r\n and not just \r
+            // Make sure we return \r\n and not just \r
             if (m_data[i] == '\r' && m_data[i + 1] == '\n') {
                 ++i;
                 result.append('\n');
             }
-              break; //command end
+            break; //command end
         }
         ++i;
     }

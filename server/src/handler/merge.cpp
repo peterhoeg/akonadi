@@ -49,9 +49,9 @@ Merge::~Merge()
 }
 
 bool Merge::mergeItem(PimItem &newItem, PimItem &currentItem,
-                       const ChangedAttributes &itemFlags,
-                       const ChangedAttributes &itemTagsRID,
-                       const ChangedAttributes &itemTagsGID)
+                      const ChangedAttributes &itemFlags,
+                      const ChangedAttributes &itemTagsRID,
+                      const ChangedAttributes &itemTagsGID)
 {
     if (newItem.rev() > 0) {
         currentItem.setRev(newItem.rev());
@@ -98,7 +98,7 @@ bool Merge::mergeItem(PimItem &newItem, PimItem &currentItem,
         bool flagsChanged = false;
         const Flag::List flags = HandlerHelper::resolveFlags(itemFlags.added);
         DataStore::self()->setItemsFlags(PimItem::List() << currentItem, flags,
-                                          &flagsChanged, true);
+                                         &flagsChanged, true);
         if (flagsChanged) {
             mChangedParts << AKONADI_PARAM_FLAGS;
         }
@@ -115,7 +115,7 @@ bool Merge::mergeItem(PimItem &newItem, PimItem &currentItem,
         if (!itemTagsRID.removed.isEmpty()) {
             const Tag::List removedTags = HandlerHelper::resolveTagsByRID(itemTagsRID.removed, connection()->context());
             DataStore::self()->removeItemsTags(PimItem::List() << currentItem, removedTags,
-                                                &tagsRemoved, true);
+                                               &tagsRemoved, true);
         }
 
         if (tagsAdded || tagsRemoved) {
@@ -165,8 +165,8 @@ bool Merge::mergeItem(PimItem &newItem, PimItem &currentItem,
     }
 
     PartStreamer streamer(connection(), m_streamParser, currentItem);
-    connect( &streamer, SIGNAL(responseAvailable(Akonadi::Server::Response)),
-             this, SIGNAL(responseAvailable(Akonadi::Server::Response)) );
+    connect(&streamer, SIGNAL(responseAvailable(Akonadi::Server::Response)),
+            this, SIGNAL(responseAvailable(Akonadi::Server::Response)));
     m_streamParser->beginList();
     while (!m_streamParser->atListEnd()) {
         QByteArray partName;

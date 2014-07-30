@@ -27,16 +27,16 @@ namespace Server {
 
 /** Aggregates client capabilities of all active sessions. */
 namespace ClientCapabilityAggregator {
-    /** Register capabilities of a new session. */
-    void addSession(const ClientCapabilities &capabilities);
-    /** Unregister capabilities of a new session. */
-    void removeSession(const ClientCapabilities &capabilities);
+/** Register capabilities of a new session. */
+void addSession(const ClientCapabilities &capabilities);
+/** Unregister capabilities of a new session. */
+void removeSession(const ClientCapabilities &capabilities);
 
-    /** Minimum required notification message version. */
-    int minimumNotificationMessageVersion();
+/** Minimum required notification message version. */
+int minimumNotificationMessageVersion();
 
-    /** Maximum required notification message version */
-    int maximumNotificationMessageVersion();
+/** Maximum required notification message version */
+int maximumNotificationMessageVersion();
 }
 
 } // namespace Server

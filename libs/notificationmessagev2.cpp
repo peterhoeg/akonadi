@@ -121,9 +121,9 @@ void NotificationMessageV2::registerDBusTypes()
 
 bool NotificationMessageV2::isValid() const
 {
-  return d->operation != Akonadi::NotificationMessageV2::InvalidOp
-         && d->type != Akonadi::NotificationMessageV2::InvalidType
-         && !d->items.isEmpty();
+    return d->operation != Akonadi::NotificationMessageV2::InvalidOp
+           && d->type != Akonadi::NotificationMessageV2::InvalidType
+           && !d->items.isEmpty();
 }
 
 void NotificationMessageV2::addEntity(Id id, const QString &remoteId, const QString &remoteRevision, const QString &mimeType)
@@ -147,7 +147,7 @@ void NotificationMessageV2::setEntities(const QList<NotificationMessageV2::Entit
 
 void NotificationMessageV2::clearEntities()
 {
-  d->items.clear();
+    d->items.clear();
 }
 
 QMap<NotificationMessageV2::Id, NotificationMessageV2::Entity> NotificationMessageV2::entities() const

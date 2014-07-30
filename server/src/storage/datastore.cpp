@@ -61,7 +61,7 @@ using namespace Akonadi::Server;
 static QMutex sTransactionMutex;
 bool DataStore::s_hasForeignKeyConstraints = false;
 
-QThreadStorage<DataStore*> DataStore::sInstances;
+QThreadStorage<DataStore *> DataStore::sInstances;
 
 #define TRANSACTION_MUTEX_LOCK if ( DbType::isSystemSQLite( m_database ) ) sTransactionMutex.lock()
 #define TRANSACTION_MUTEX_UNLOCK if ( DbType::isSystemSQLite( m_database ) ) sTransactionMutex.unlock()
@@ -189,12 +189,12 @@ bool DataStore::init()
 
 NotificationCollector *DataStore::notificationCollector()
 {
-  if ( mNotificationCollector == 0 ) {
-    mNotificationCollector = new NotificationCollector( this );
-    NotificationManager::self()->connectNotificationCollector( notificationCollector() );
-  }
+    if (mNotificationCollector == 0) {
+        mNotificationCollector = new NotificationCollector(this);
+        NotificationManager::self()->connectNotificationCollector(notificationCollector());
+    }
 
-  return mNotificationCollector;
+    return mNotificationCollector;
 }
 
 DataStore *DataStore::self()
@@ -882,7 +882,7 @@ QVector<Collection> DataStore::virtualCollections(const PimItem &item)
     return qb.result();
 }
 
-QMap<Entity::Id,QList<PimItem> > DataStore::virtualCollections( const PimItem::List &items )
+QMap<Entity::Id, QList<PimItem> > DataStore::virtualCollections(const PimItem::List &items)
 {
     QueryBuilder qb(CollectionPimItemRelation::tableName(), QueryBuilder::Select);
     qb.addJoin(QueryBuilder::InnerJoin, Collection::tableName(),
@@ -891,12 +891,12 @@ QMap<Entity::Id,QList<PimItem> > DataStore::virtualCollections( const PimItem::L
                PimItem::idFullColumnName(), CollectionPimItemRelation::rightFullColumnName());
     qb.addColumn(Collection::idFullColumnName());
     qb.addColumns(QStringList() << PimItem::idFullColumnName()
-                                << PimItem::remoteIdFullColumnName()
-                                << PimItem::remoteRevisionFullColumnName()
-                                << PimItem::mimeTypeIdFullColumnName());
+                  << PimItem::remoteIdFullColumnName()
+                  << PimItem::remoteRevisionFullColumnName()
+                  << PimItem::mimeTypeIdFullColumnName());
     qb.addSortColumn(Collection::idFullColumnName(), Query::Ascending);
 
-    if (items.count() == 1){
+    if (items.count() == 1) {
         qb.addValueCondition(CollectionPimItemRelation::rightFullColumnName(), Query::Equals, items.first().id());
     } else {
         QVariantList ids;

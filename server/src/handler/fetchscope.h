@@ -78,7 +78,7 @@ public:
     bool gidRequested() const;
     void setTagsRequested(bool tagsRequested);
     bool tagsRequested() const;
-    void setVirtualReferencesRequested( bool vRefRequested );
+    void setVirtualReferencesRequested(bool vRefRequested);
     bool virtualReferencesRequested() const;
 
 private:

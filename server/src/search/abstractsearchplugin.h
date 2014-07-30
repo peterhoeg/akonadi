@@ -42,7 +42,9 @@ public:
     /**
      * Destructor.
      */
-    virtual ~AbstractSearchPlugin() { };
+    virtual ~AbstractSearchPlugin()
+    {
+    };
 
     /**
      * Reimplement this method to provide the actual search capability.

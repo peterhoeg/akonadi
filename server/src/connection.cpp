@@ -55,7 +55,6 @@ Connection::Connection(QObject *parent)
 {
 }
 
-
 Connection::Connection(quintptr socketDescriptor, QObject *parent)
     : Connection(parent)
 {
@@ -108,7 +107,7 @@ Connection::Connection(quintptr socketDescriptor, QObject *parent)
 
 int Connection::protocolVersion()
 {
-  return AKONADI_PROTOCOL_VERSION;
+    return AKONADI_PROTOCOL_VERSION;
 }
 
 DataStore *Connection::storageBackend()
@@ -131,9 +130,9 @@ Connection::~Connection()
     delete m_streamParser;
     m_streamParser = 0;
 
-    ClientCapabilityAggregator::removeSession( m_clientCapabilities );
-    Tracer::self()->endConnection( m_identifier, QString() );
-    collectionReferenceManager()->removeSession( m_sessionId );
+    ClientCapabilityAggregator::removeSession(m_clientCapabilities);
+    Tracer::self()->endConnection(m_identifier, QString());
+    collectionReferenceManager()->removeSession(m_sessionId);
 }
 
 void Connection::slotNewData()
@@ -270,8 +269,8 @@ void Connection::slotConnectionStateChange(ConnectionState state)
     case Selected:
         break;
     case LoggingOut:
-        if (dynamic_cast<QLocalSocket*>( m_socket ) ) {
-          dynamic_cast<QLocalSocket*>( m_socket )->disconnectFromServer();
+        if (dynamic_cast<QLocalSocket *>(m_socket)) {
+            dynamic_cast<QLocalSocket *>(m_socket)->disconnectFromServer();
         }
         break;
     }

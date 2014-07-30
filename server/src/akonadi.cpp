@@ -67,7 +67,7 @@
 using namespace Akonadi;
 using namespace Akonadi::Server;
 
-AkonadiServer* AkonadiServer::s_instance = 0;
+AkonadiServer *AkonadiServer::s_instance = 0;
 
 AkonadiServer::AkonadiServer(QObject *parent)
     : QLocalServer(parent)
@@ -391,13 +391,12 @@ void AkonadiServer::serviceOwnerChanged(const QString &name, const QString &oldO
     }
 }
 
-CacheCleaner* AkonadiServer::cacheCleaner()
+CacheCleaner *AkonadiServer::cacheCleaner()
 {
     return mCacheCleaner;
 }
 
-IntervalCheck* AkonadiServer::intervalChecker()
+IntervalCheck *AkonadiServer::intervalChecker()
 {
     return mIntervalChecker;
 }
-

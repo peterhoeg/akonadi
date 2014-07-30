@@ -73,7 +73,7 @@ void SearchManagerThread::run()
 }
 
 SearchManager::SearchManager(QObject *parent)
-    : QObject( parent )
+    : QObject(parent)
 {
     qRegisterMetaType< QSet<qint64> >();
     qRegisterMetaType<Collection>();
@@ -85,7 +85,7 @@ SearchManager::SearchManager(QObject *parent)
     DataStore::self();
 }
 
-void SearchManager::init(const QStringList& searchEngines)
+void SearchManager::init(const QStringList &searchEngines)
 {
     mEngines.reserve(searchEngines.size());
     Q_FOREACH (const QString &engineName, searchEngines) {
@@ -107,7 +107,6 @@ void SearchManager::init(const QStringList& searchEngines)
         QLatin1String("/SearchManager"),
         this,
         QDBusConnection::ExportAdaptors);
-
 
     // The timer will tick 15 seconds after last change notification. If a new notification
     // is delivered in the meantime, the timer is reset
