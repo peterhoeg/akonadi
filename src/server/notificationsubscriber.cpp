@@ -1,5 +1,5 @@
 /*
-    Copyright (c) 2010 Michael Jansen <kde@michael-jansen>
+    Copyright (c) 2015 Daniel Vrátil <dvratil@kde.org>
 
     This library is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public License as published by
@@ -17,247 +17,212 @@
     02110-1301, USA.
 */
 
-#include "notificationsource.h"
-
-#include <shared/akdebug.h>
-
-#include "notificationsourceadaptor.h"
-#include "notificationmanager.h"
+#include "notificationsubscriber.h"
 #include "collectionreferencemanager.h"
-#include "connection.h"
+
+#include <QLocalSocket>
+#include <QDataStream>
+
+#include <private/protocol_p.h>
+#include <private/protocol_exception_p.h>
 
 using namespace Akonadi;
 using namespace Akonadi::Server;
 
-template<typename T>
-QVector<T> setToVector(const QSet<T> &set)
-{
-    QVector<T> v;
-    v.reserve(set.size());
-    Q_FOREACH (const T &val, set) {
-        v << val;
-    }
-    return v;
-}
+QMimeDatabase NotificationSubscriber::sMimeDatabase;
 
-NotificationSource::NotificationSource(const QString &identifier, const QString &clientServiceName, NotificationManager *parent)
-    : QObject(parent)
-    , mManager(parent)
-    , mIdentifier(identifier)
-    , mDBusIdentifier(identifier)
-    , mClientWatcher(0)
+NotificationSubscriber::NotificationSubscriber()
+    : QObject()
+    , mSocket(Q_NULLPTR)
     , mAllMonitored(false)
     , mExclusive(false)
 {
-    new NotificationSourceAdaptor(this);
+}
 
-    // Clean up for dbus usage: any non-alphanumeric char should be turned into '_'
-    const int len = mDBusIdentifier.length();
-    for (int i = 0; i < len; ++i) {
-        if (!mDBusIdentifier[i].isLetterOrNumber()) {
-            mDBusIdentifier[i] = QLatin1Char('_');
+
+NotificationSubscriber::NotificationSubscriber(quintptr socketDescriptor)
+    : NotificationSubscriber()
+{
+    mSocket = new QLocalSocket(this);
+    connect(mSocket, &QLocalSocket::readyRead,
+            this, &NotificationSubscriber::socketReadyRead);
+    connect(mSocket, &QLocalSocket::disconnected,
+            this, &NotificationSubscriber::socketDisconnected);
+    mSocket->setSocketDescriptor(socketDescriptor);
+
+    writeCommand(0, Protocol::HelloResponse(QStringLiteral("Akonadi"),
+                                                        QStringLiteral("Not-really IMAP server"),
+                                                        Protocol::version()));
+}
+
+NotificationSubscriber::~NotificationSubscriber()
+{
+}
+
+void NotificationSubscriber::socketReadyRead()
+{
+    while (mSocket->bytesAvailable() > (int) sizeof(qint64)) {
+        QDataStream stream(mSocket);
+
+        // Ignored atm
+        qint64 tag = -1;
+        stream >> tag;
+
+        Protocol::Command cmd;
+        try {
+            cmd = Protocol::deserialize(mSocket);
+        } catch (const Akonadi::ProtocolException &e) {
+            qDebug() << "ProtocolException:" << e.what();
+            disconnectSubscriber();
+            return;
+        } catch (const std::exception &e) {
+            qDebug() << "Unknown exception:" << e.what();
+            disconnectSubscriber();
+            return;
+        }
+        if (cmd.type() == Protocol::Command::Invalid) {
+            qDebug() << "Received an invalid command: resetting connection";
+            disconnectSubscriber();
+            return;
+        }
+
+        switch (cmd.type()) {
+        case Protocol::Command::CreateSubscription:
+            registerSubscriber(cmd);
+            writeCommand(tag, Protocol::CreateSubscriptionResponse());
+            break;
+        case Protocol::Command::ModifySubscription:
+            if (mSubscriber.isEmpty()) {
+                qDebug() << "Received ModifySubscription command before RegisterSubscriber";
+                disconnectSubscriber();
+                return;
+            }
+            modifySubscription(cmd);
+            writeCommand(tag, Protocol::ModifySubscriptionResponse());
+            break;
+        case Protocol::Command::Logout:
+            disconnectSubscriber();
+            break;
+        default:
+            qDebug() << "Invalid command" << cmd.type() << "received by NotificationSubscriber" << mSubscriber;
+            disconnectSubscriber();
+            break;
         }
     }
-
-    QDBusConnection::sessionBus().registerObject(
-        dbusPath().path(),
-        this,
-        QDBusConnection::ExportAdaptors);
-
-    mClientWatcher = new QDBusServiceWatcher(clientServiceName, QDBusConnection::sessionBus(), QDBusServiceWatcher::WatchForUnregistration, this);
-    connect(mClientWatcher, &QDBusServiceWatcher::serviceUnregistered, this, &NotificationSource::serviceUnregistered);
 }
 
-NotificationSource::~NotificationSource()
+void NotificationSubscriber::socketDisconnected()
 {
+    qDebug() << "Subscriber" << mSubscriber << "disconnected from us!";
+    disconnectSubscriber();
 }
 
-QDBusObjectPath NotificationSource::dbusPath() const
+void NotificationSubscriber::disconnectSubscriber()
 {
-    return QDBusObjectPath(QLatin1String("/subscriber/") + mDBusIdentifier);
+    disconnect(mSocket, &QLocalSocket::readyRead,
+               this, &NotificationSubscriber::socketReadyRead);
+    disconnect(mSocket, &QLocalSocket::disconnected,
+               this, &NotificationSubscriber::socketDisconnected);
+    mSocket->close();
+    deleteLater();
 }
 
-void NotificationSource::emitNotification(const Protocol::ChangeNotification::List &notifications)
+void NotificationSubscriber::registerSubscriber(const Protocol::CreateSubscriptionCommand &command)
 {
-    Q_FOREACH (const auto &notification, notifications) {
-        Q_EMIT notify(notification);
+    qDebug() << "Subscriber identified:" << command.subscriberName();
+    mSubscriber = command.subscriberName();
+}
+
+void NotificationSubscriber::modifySubscription(const Protocol::ModifySubscriptionCommand &command)
+{
+    const auto modifiedParts = command.modifiedParts();
+
+    #define START_MONITORING(type) \
+        (modifiedParts & Protocol::ModifySubscriptionCommand::ModifiedParts( \
+            Protocol::ModifySubscriptionCommand::type | Protocol::ModifySubscriptionCommand::Add))
+
+    #define STOP_MONITORING(type) \
+        (modifiedParts & Protocol::ModifySubscriptionCommand::ModifiedParts( \
+            Protocol::ModifySubscriptionCommand::type | Protocol::ModifySubscriptionCommand::Remove))
+
+    #define APPEND(set, newItems) \
+        Q_FOREACH (const auto &entity, newItems) { \
+            set.insert(entity); \
+        }
+    #define REMOVE(set, items) \
+        Q_FOREACH (const auto &entity, items) { \
+            set.remove(entity); \
+        }
+
+    qDebug() << "Subscription for" << mSubscriber << "updated:";
+    if (START_MONITORING(Types)) {
+        APPEND(mMonitoredTypes, command.startMonitoringTypes())
+        qDebug() << "\tStart monitoring types:" << command.startMonitoringTypes();
+    }
+    if (STOP_MONITORING(Types)) {
+        REMOVE(mMonitoredTypes, command.stopMonitoringTypes());
+        qDebug() << "\tStop monitoring types:" << command.stopMonitoringTypes();
+    }
+    if (START_MONITORING(Collections)) {
+        APPEND(mMonitoredCollections, command.startMonitoringCollections())
+        qDebug() << "\tStart monitoring collections:" << command.startMonitoringCollections();
+    }
+    if (STOP_MONITORING(Collections)) {
+        REMOVE(mMonitoredCollections, command.stopMonitoringCollections())
+        qDebug() << "\tStop monitoring collections:" << command.stopMonitoringCollections();
+    }
+    if (START_MONITORING(Items)) {
+        APPEND(mMonitoredItems, command.startMonitoringItems())
+        qDebug() << "\tStart monitoring items:" << command.startMonitoringItems();
+    }
+    if (STOP_MONITORING(Items)) {
+        REMOVE(mMonitoredItems, command.stopMonitoringItems())
+        qDebug() << "\tStop monitoring items:" << command.stopMonitoringItems();
+    }
+    if (START_MONITORING(Tags)) {
+        APPEND(mMonitoredTags, command.startMonitoringTags())
+        qDebug() << "\tStart monitoring tags:" << command.startMonitoringTags();
+    }
+    if (STOP_MONITORING(Tags)) {
+        REMOVE(mMonitoredTags, command.stopMonitoringTags())
+        qDebug() << "\tStop monitoring tags:" << command.stopMonitoringTags();
+    }
+    if (START_MONITORING(Resources)) {
+        APPEND(mMonitoredResources, command.startMonitoringResources())
+        qDebug() << "\tStart monitoring resources:" << command.startMonitoringResources();
+    }
+    if (STOP_MONITORING(Resources)) {
+        REMOVE(mMonitoredResources, command.stopMonitoringResources())
+        qDebug() << "\tStop monitoring resourceS:" << command.stopMonitoringResources();
+    }
+    if (START_MONITORING(MimeTypes)) {
+        APPEND(mMonitoredMimeTypes, command.startMonitoringMimeTypes())
+        qDebug() << "\tStart monitoring mime types:" << command.startMonitoringMimeTypes();
+    }
+    if (STOP_MONITORING(MimeTypes)) {
+        REMOVE(mMonitoredMimeTypes, command.stopMonitoringMimeTypes())
+        qDebug() << "\tStop monitoring mime types:" << command.stopMonitoringCollections();
+    }
+    if (START_MONITORING(Sessions)) {
+        APPEND(mIgnoredSessions, command.startIgnoringSessions())
+        qDebug() << "\tStart ignoring sessions:" << command.startIgnoringSessions();
+    }
+    if (STOP_MONITORING(Sessions)) {
+        REMOVE(mIgnoredSessions, command.stopIgnoringSessions())
+        qDebug() << "\tStop ignoring sessions:" << command.stopIgnoringSessions();
+    }
+    if (modifiedParts & Protocol::ModifySubscriptionCommand::AllFlag) {
+        mAllMonitored = command.allMonitored();
+        qDebug() << "\tAll monitored:" << command.allMonitored();
+    }
+    if (modifiedParts & Protocol::ModifySubscriptionCommand::ExclusiveFlag) {
+        mExclusive = command.isExclusive();
+        qDebug() << "\tExclusive:" << command.isExclusive();
     }
 }
 
-QString NotificationSource::identifier() const
-{
-    return mIdentifier;
-}
 
-void NotificationSource::unsubscribe()
-{
-    mManager->unsubscribe(mIdentifier);
-}
-
-bool NotificationSource::isExclusive() const
-{
-    return mExclusive;
-}
-
-void NotificationSource::setExclusive(bool enabled)
-{
-    mExclusive = enabled;
-}
-
-void NotificationSource::addClientServiceName(const QString &clientServiceName)
-{
-    if (mClientWatcher->watchedServices().contains(clientServiceName)) {
-        return;
-    }
-
-    mClientWatcher->addWatchedService(clientServiceName);
-    akDebug() << Q_FUNC_INFO << "Notification source" << mIdentifier << "now serving:" << mClientWatcher->watchedServices();
-}
-
-void NotificationSource::serviceUnregistered(const QString &serviceName)
-{
-    mClientWatcher->removeWatchedService(serviceName);
-    akDebug() << Q_FUNC_INFO << "Notification source" << mIdentifier << "now serving:" << mClientWatcher->watchedServices();
-
-    if (mClientWatcher->watchedServices().isEmpty()) {
-        unsubscribe();
-    }
-}
-
-void NotificationSource::setMonitoredCollection(Entity::Id id, bool monitored)
-{
-    if (id < 0) {
-        return;
-    }
-
-    if (monitored && !mMonitoredCollections.contains(id)) {
-        mMonitoredCollections.insert(id);
-        Q_EMIT monitoredCollectionsChanged();
-    } else if (!monitored) {
-        mMonitoredCollections.remove(id);
-        Q_EMIT monitoredCollectionsChanged();
-    }
-}
-
-QVector<Entity::Id> NotificationSource::monitoredCollections() const
-{
-    return setToVector<Entity::Id>(mMonitoredCollections);
-}
-
-void NotificationSource::setMonitoredItem(Entity::Id id, bool monitored)
-{
-    if (id < 0) {
-        return;
-    }
-
-    if (monitored && !mMonitoredItems.contains(id)) {
-        mMonitoredItems.insert(id);
-        Q_EMIT monitoredItemsChanged();
-    } else if (!monitored) {
-        mMonitoredItems.remove(id);
-        Q_EMIT monitoredItemsChanged();
-    }
-}
-
-QVector<Entity::Id> NotificationSource::monitoredItems() const
-{
-    return setToVector<Entity::Id>(mMonitoredItems);
-}
-
-void NotificationSource::setMonitoredTag(Entity::Id id, bool monitored)
-{
-    if (id < 0) {
-        return;
-    }
-
-    if (monitored && !mMonitoredTags.contains(id)) {
-        mMonitoredTags.insert(id);
-        Q_EMIT monitoredTagsChanged();
-    } else if (!monitored) {
-        mMonitoredTags.remove(id);
-        Q_EMIT monitoredTagsChanged();
-    }
-}
-
-QVector<Entity::Id> NotificationSource::monitoredTags() const
-{
-    return setToVector<Entity::Id>(mMonitoredTags);
-}
-
-void NotificationSource::setMonitoredResource(const QByteArray &resource, bool monitored)
-{
-    if (monitored && !mMonitoredResources.contains(resource)) {
-        mMonitoredResources.insert(resource);
-        Q_EMIT monitoredResourcesChanged();
-    } else if (!monitored) {
-        mMonitoredResources.remove(resource);
-        Q_EMIT monitoredResourcesChanged();
-    }
-}
-
-QVector<QByteArray> NotificationSource::monitoredResources() const
-{
-    return setToVector<QByteArray>(mMonitoredResources);
-}
-
-void NotificationSource::setMonitoredMimeType(const QString &mimeType, bool monitored)
-{
-    if (mimeType.isEmpty()) {
-        return;
-    }
-
-    if (monitored && !mMonitoredMimeTypes.contains(mimeType)) {
-        mMonitoredMimeTypes.insert(mimeType);
-        Q_EMIT monitoredMimeTypesChanged();
-    } else if (!monitored) {
-        mMonitoredMimeTypes.remove(mimeType);
-        Q_EMIT monitoredMimeTypesChanged();
-    }
-}
-
-QStringList NotificationSource::monitoredMimeTypes() const
-{
-    return mMonitoredMimeTypes.toList();
-}
-
-void NotificationSource::setAllMonitored(bool allMonitored)
-{
-    if (allMonitored && !mAllMonitored) {
-        mAllMonitored = true;
-        Q_EMIT isAllMonitoredChanged();
-    } else if (!allMonitored) {
-        mAllMonitored = false;
-        Q_EMIT isAllMonitoredChanged();
-    }
-}
-
-bool NotificationSource::isAllMonitored() const
-{
-    return mAllMonitored;
-}
-
-void NotificationSource::setSession(const QByteArray &sessionId)
-{
-    mSession = sessionId;
-}
-
-void NotificationSource::setIgnoredSession(const QByteArray &sessionId, bool ignored)
-{
-    if (ignored && !mIgnoredSessions.contains(sessionId)) {
-        mIgnoredSessions.insert(sessionId);
-        Q_EMIT ignoredSessionsChanged();
-    } else if (!ignored) {
-        mIgnoredSessions.remove(sessionId);
-        Q_EMIT ignoredSessionsChanged();
-    }
-}
-
-QVector<QByteArray> NotificationSource::ignoredSessions() const
-{
-    return setToVector<QByteArray>(mIgnoredSessions);
-}
-
-bool NotificationSource::isCollectionMonitored(Entity::Id id) const
+bool NotificationSubscriber::isCollectionMonitored(Entity::Id id) const
 {
     if (id < 0) {
         return false;
@@ -269,14 +234,23 @@ bool NotificationSource::isCollectionMonitored(Entity::Id id) const
     return false;
 }
 
-bool NotificationSource::isMimeTypeMonitored(const QString &mimeType) const
+bool NotificationSubscriber::isMimeTypeMonitored(const QString &mimeType) const
 {
-    return mMonitoredMimeTypes.contains(mimeType);
+    const QMimeType mt = sMimeDatabase.mimeTypeForName(mimeType);
+    if (mMonitoredMimeTypes.contains(mimeType)) {
+        return true;
+    }
 
-    // FIXME: Handle mimetype aliases
+    Q_FOREACH (const QString &alias, mt.aliases()) {
+        if (mMonitoredMimeTypes.contains(alias)) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
-bool NotificationSource::isMoveDestinationResourceMonitored(const Protocol::ChangeNotification &msg) const
+bool NotificationSubscriber::isMoveDestinationResourceMonitored(const Protocol::ChangeNotification &msg) const
 {
     if (msg.operation() != Protocol::ChangeNotification::Move) {
         return false;
@@ -284,23 +258,7 @@ bool NotificationSource::isMoveDestinationResourceMonitored(const Protocol::Chan
     return mMonitoredResources.contains(msg.destinationResource());
 }
 
-void NotificationSource::setMonitoredType(Protocol::ChangeNotification::Type type, bool monitored)
-{
-    if (monitored && !mMonitoredTypes.contains(type)) {
-        mMonitoredTypes.insert(type);
-        Q_EMIT monitoredTypesChanged();
-    } else if (!monitored) {
-        mMonitoredTypes.remove(type);
-        Q_EMIT monitoredTypesChanged();
-    }
-}
-
-QVector<Protocol::ChangeNotification::Type> NotificationSource::monitoredTypes() const
-{
-    return setToVector<Protocol::ChangeNotification::Type>(mMonitoredTypes);
-}
-
-bool NotificationSource::acceptsNotification(const Protocol::ChangeNotification &notification)
+bool NotificationSubscriber::acceptsNotification(const Protocol::ChangeNotification &notification)
 {
     // session is ignored
     if (mIgnoredSessions.contains(notification.sessionId())) {
@@ -482,4 +440,26 @@ bool NotificationSource::acceptsNotification(const Protocol::ChangeNotification 
     }
 
     return false;
+}
+
+void NotificationSubscriber::notify(const Protocol::ChangeNotification::List &notifications)
+{
+    Q_FOREACH (const auto &notification, notifications) {
+        if (acceptsNotification(notification)) {
+            writeNotification(notification);
+        }
+    }
+}
+
+void NotificationSubscriber::writeNotification(const Protocol::ChangeNotification &notification)
+{
+    // tag chosen by fair dice roll
+    writeCommand(4, notification);
+}
+
+void NotificationSubscriber::writeCommand(qint64 tag, const Protocol::Command& cmd)
+{
+    QDataStream stream(mSocket);
+    stream << tag; // chosen by fair dice roll
+    Protocol::serialize(mSocket, cmd);
 }

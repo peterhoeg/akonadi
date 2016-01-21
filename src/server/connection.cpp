@@ -53,7 +53,6 @@ Connection::Connection(QObject *parent)
     , m_socket(0)
     , m_currentHandler(0)
     , m_connectionState(NonAuthenticated)
-    , m_isNotificationBus(false)
     , m_backend(0)
     , m_verifyCacheOnRetrieval(false)
     , m_idleTimer(Q_NULLPTR)
@@ -114,7 +113,6 @@ void Connection::quit()
 {
     Tracer::self()->endConnection(m_identifier, QString());
     collectionReferenceManager()->removeSession(m_sessionId);
-    NotificationManager::self()->unregisterConnection(this);
 
     delete m_socket;
     m_socket = 0;
@@ -172,11 +170,6 @@ void Connection::slotConnectionIdle()
 
 void Connection::slotNewData()
 {
-    if (m_isNotificationBus) {
-        qWarning() << "Connection" << sessionId() << ": received data when in NotificationBus mode!";
-        return;
-    }
-
     m_idleTimer->stop();
 
     // will only open() a previously idle backend.
@@ -328,27 +321,6 @@ QByteArray Connection::sessionId() const
     return m_sessionId;
 }
 
-void Connection::setIsNotificationBus(bool on)
-{
-    if (m_isNotificationBus == on) {
-        return;
-    }
-
-    m_isNotificationBus = on;
-    if (m_isNotificationBus) {
-        qDebug() << "New notification bus:" << m_sessionId;
-        NotificationManager::self()->registerConnection(this);
-    } else {
-        NotificationManager::self()->unregisterConnection(this);
-    }
-}
-
-bool Connection::isNotificationBus() const
-{
-    return m_isNotificationBus;
-}
-
-
 
 bool Connection::isOwnerResource(const PimItem &item) const
 {
@@ -404,11 +376,8 @@ void Connection::reportTime() const
 
 void Connection::sendResponse(qint64 tag, const Protocol::Command &response)
 {
-    // Notifications have their own debugging system
-    if (!m_isNotificationBus) {
-        if (Tracer::self()->currentTracer() != QLatin1String("null")) {
-            Tracer::self()->connectionOutput(m_identifier, QByteArray::number(tag) + ' ' + response.debugString().toUtf8());
-        }
+    if (Tracer::self()->currentTracer() != QLatin1String("null")) {
+        Tracer::self()->connectionOutput(m_identifier, QByteArray::number(tag) + ' ' + response.debugString().toUtf8());
     }
     QDataStream stream(m_socket);
     stream << tag;
@@ -417,13 +386,8 @@ void Connection::sendResponse(qint64 tag, const Protocol::Command &response)
 
 void Connection::sendResponse(const Protocol::Command &response)
 {
-    if (m_isNotificationBus) {
-        // FIXME: Don't hardcode the tag for notifications
-        sendResponse(4, response);
-    } else {
-        Q_ASSERT(m_currentHandler);
-        sendResponse(m_currentHandler->tag(), response);
-    }
+    Q_ASSERT(m_currentHandler);
+    sendResponse(m_currentHandler->tag(), response);
 }
 
 Protocol::Command Connection::readCommand()

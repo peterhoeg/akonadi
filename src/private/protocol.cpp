@@ -8711,7 +8711,7 @@ public:
         , startMimeTypes(other.startMimeTypes)
         , stopMimeTypes(other.stopMimeTypes)
         , startSessions(other.startSessions)
-        , stopSessions(other.startSessions)
+        , stopSessions(other.stopSessions)
         , monitorAll(other.monitorAll)
         , exclusive(other.exclusive)
     {
