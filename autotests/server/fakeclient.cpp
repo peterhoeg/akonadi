@@ -160,7 +160,7 @@ void FakeClient::writeClientPart()
 void FakeClient::run()
 {
     mSocket = new QLocalSocket();
-    mSocket->connectToServer(FakeAkonadiServer::socketFile());
+    mSocket->connectToServer(FakeAkonadiServer::namedPipe());
     connect(mSocket, &QIODevice::readyRead, this, &FakeClient::dataAvailable);
     connect(mSocket, &QLocalSocket::disconnected, this, &FakeClient::connectionLost);
     if (!mSocket->waitForConnected()) {
