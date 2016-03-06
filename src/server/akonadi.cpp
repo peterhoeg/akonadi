@@ -304,9 +304,7 @@ bool AkonadiServer::quit()
     mAlreadyShutdown = true;
 
     akDebug() << "terminating connection threads";
-    for (int i = 0; i < mConnections.count(); ++i) {
-        delete mConnections[i];
-    }
+    qDeleteAll(mConnections);
     mConnections.clear();
 
     akDebug() << "terminating service threads";
@@ -352,10 +350,11 @@ void AkonadiServer::newCmdConnection(quintptr socketDescriptor)
         return;
     }
 
-    QPointer<Connection> connection = new Connection(socketDescriptor);
-    connect(connection.data(), &Connection::disconnected,
-            this, [connection]() {
-                delete connection.data();
+    Connection *connection = new Connection(socketDescriptor);
+    connect(connection, &Connection::disconnected,
+            this, [this, connection]() {
+                delete connection;
+                mConnections.removeOne(connection);
             }, Qt::QueuedConnection);
     mConnections.append(connection);
 }
