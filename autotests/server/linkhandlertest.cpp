@@ -35,6 +35,8 @@
 using namespace Akonadi;
 using namespace Akonadi::Server;
 
+Q_DECLARE_METATYPE(Akonadi::Protocol::ItemChangeNotification)
+
 class LinkHandlerTest : public QObject
 {
     Q_OBJECT
@@ -66,22 +68,21 @@ private Q_SLOTS:
     void testLink_data()
     {
         QTest::addColumn<TestScenario::List>("scenarios");
-        QTest::addColumn<Akonadi::Protocol::ChangeNotification>("notification");
+        QTest::addColumn<Akonadi::Protocol::ItemChangeNotification>("notification");
         QTest::addColumn<bool>("expectFail");
 
         TestScenario::List scenarios;
-        Protocol::ChangeNotification notification;
+        Protocol::ItemChangeNotification notification;
 
         scenarios << FakeAkonadiServer::loginScenario()
                   << TestScenario::create(5, TestScenario::ClientCmd, Protocol::LinkItemsCommand(Protocol::LinkItemsCommand::Link, ImapInterval(1, 3), 3))
                   << TestScenario::create(5, TestScenario::ServerCmd, createError(QLatin1String("Can't link items to non-virtual collections")));
-        QTest::newRow("non-virtual collection") << scenarios << Protocol::ChangeNotification() << true;
+        QTest::newRow("non-virtual collection") << scenarios << Protocol::ItemChangeNotification() << true;
 
-        notification.setType(Protocol::ChangeNotification::Items);
-        notification.setOperation(Protocol::ChangeNotification::Link);
-        notification.addEntity(1, QLatin1String("A"), QString(), QLatin1String("application/octet-stream"));
-        notification.addEntity(2, QLatin1String("B"), QString(), QLatin1String("application/octet-stream"));
-        notification.addEntity(3, QLatin1String("C"), QString(), QLatin1String("application/octet-stream"));
+        notification.setOperation(Protocol::ItemChangeNotification::Link);
+        notification.addItem(1, QLatin1String("A"), QString(), QLatin1String("application/octet-stream"));
+        notification.addItem(2, QLatin1String("B"), QString(), QLatin1String("application/octet-stream"));
+        notification.addItem(3, QLatin1String("C"), QString(), QLatin1String("application/octet-stream"));
         notification.setParentCollection(6);
         notification.setResource("akonadi_fake_resource_with_virtual_collections_0");
         notification.setSessionId(FakeAkonadiServer::instanceName().toLatin1());
@@ -92,8 +93,8 @@ private Q_SLOTS:
                   << TestScenario::create(5, TestScenario::ServerCmd, Protocol::LinkItemsResponse());
         QTest::newRow("normal") << scenarios << notification << false;
 
-        notification.clearEntities();
-        notification.addEntity(4, QLatin1String("D"), QString(), QLatin1String("application/octet-stream"));
+        notification.clearItems();
+        notification.addItem(4, QLatin1String("D"), QString(), QLatin1String("application/octet-stream"));
         scenarios.clear();
         scenarios << FakeAkonadiServer::loginScenario()
                   << TestScenario::create(5, TestScenario::ClientCmd, Protocol::LinkItemsCommand(Protocol::LinkItemsCommand::Link, QVector<qint64>{ 4, 123456 }, 6))
@@ -104,7 +105,7 @@ private Q_SLOTS:
         scenarios << FakeAkonadiServer::loginScenario()
                   << TestScenario::create(5, TestScenario::ClientCmd, Protocol::LinkItemsCommand(Protocol::LinkItemsCommand::Link, 4, 6))
                   << TestScenario::create(5, TestScenario::ServerCmd, Protocol::LinkItemsResponse());
-        QTest::newRow("non-existent item only") << scenarios << Protocol::ChangeNotification() << false;
+        QTest::newRow("non-existent item only") << scenarios << Protocol::ItemChangeNotification() << false;
 
         //FIXME: All RID related operations are currently broken because we reset the collection context before every command,
         //and LINK still relies on SELECT to set the collection context.
@@ -144,7 +145,7 @@ private Q_SLOTS:
     void testLink()
     {
         QFETCH(TestScenario::List, scenarios);
-        QFETCH(Protocol::ChangeNotification, notification);
+        QFETCH(Protocol::ItemChangeNotification, notification);
         QFETCH(bool, expectFail);
 
         FakeAkonadiServer::instance()->setScenarios(scenarios);
@@ -155,12 +156,12 @@ private Q_SLOTS:
             QCOMPARE(notificationSpy->count(), 1);
             const Protocol::ChangeNotification::List notifications = notificationSpy->takeFirst().first().value<Protocol::ChangeNotification::List>();
             QCOMPARE(notifications.count(), 1);
-            QCOMPARE(notifications.first(), notification);
+            QCOMPARE(Protocol::ItemChangeNotification(notifications.first()), notification);
         } else {
             QVERIFY(notificationSpy->isEmpty() || notificationSpy->takeFirst().first().value<Protocol::ChangeNotification::List>().isEmpty());
         }
 
-        Q_FOREACH (const Protocol::ChangeNotification::Entity &entity, notification.entities()) {
+        Q_FOREACH (const auto &entity, notification.items()) {
             if (expectFail) {
                 QVERIFY(!Collection::relatesToPimItem(notification.parentCollection(), entity.id));
             } else {
@@ -172,22 +173,21 @@ private Q_SLOTS:
     void testUnlink_data()
     {
         QTest::addColumn<TestScenario::List>("scenarios");
-        QTest::addColumn<Akonadi::Protocol::ChangeNotification>("notification");
+        QTest::addColumn<Akonadi::Protocol::ItemChangeNotification>("notification");
         QTest::addColumn<bool>("expectFail");
 
         TestScenario::List scenarios;
-        Protocol::ChangeNotification notification;
+        Protocol::ItemChangeNotification notification;
 
         scenarios << FakeAkonadiServer::loginScenario()
                  << TestScenario::create(5, TestScenario::ClientCmd, Protocol::LinkItemsCommand(Protocol::LinkItemsCommand::Unlink, ImapInterval(1, 3), 3))
                  << TestScenario::create(5, TestScenario::ServerCmd, createError(QLatin1String("Can't link items to non-virtual collections")));
-        QTest::newRow("non-virtual collection") << scenarios << Protocol::ChangeNotification() << true;
+        QTest::newRow("non-virtual collection") << scenarios << Protocol::ItemChangeNotification() << true;
 
-        notification.setType(Protocol::ChangeNotification::Items);
-        notification.setOperation(Protocol::ChangeNotification::Unlink);
-        notification.addEntity(1, QLatin1String("A"), QString(), QLatin1String("application/octet-stream"));
-        notification.addEntity(2, QLatin1String("B"), QString(), QLatin1String("application/octet-stream"));
-        notification.addEntity(3, QLatin1String("C"), QString(), QLatin1String("application/octet-stream"));
+        notification.setOperation(Protocol::ItemChangeNotification::Unlink);
+        notification.addItem(1, QLatin1String("A"), QString(), QLatin1String("application/octet-stream"));
+        notification.addItem(2, QLatin1String("B"), QString(), QLatin1String("application/octet-stream"));
+        notification.addItem(3, QLatin1String("C"), QString(), QLatin1String("application/octet-stream"));
         notification.setParentCollection(6);
         notification.setResource("akonadi_fake_resource_with_virtual_collections_0");
         notification.setSessionId(FakeAkonadiServer::instanceName().toLatin1());
@@ -197,8 +197,8 @@ private Q_SLOTS:
                   << TestScenario::create(5, TestScenario::ServerCmd, Protocol::LinkItemsResponse());
         QTest::newRow("normal") << scenarios << notification << false;
 
-        notification.clearEntities();
-        notification.addEntity(4, QLatin1String("D"), QString(), QLatin1String("application/octet-stream"));
+        notification.clearItems();
+        notification.addItem(4, QLatin1String("D"), QString(), QLatin1String("application/octet-stream"));
         scenarios.clear();
         scenarios << FakeAkonadiServer::loginScenario()
                   << TestScenario::create(5, TestScenario::ClientCmd, Protocol::LinkItemsCommand(Protocol::LinkItemsCommand::Unlink, QVector<qint64>{ 4, 2048 }, 6))
@@ -209,7 +209,7 @@ private Q_SLOTS:
         scenarios << FakeAkonadiServer::loginScenario()
                   << TestScenario::create(5, TestScenario::ClientCmd, Protocol::LinkItemsCommand(Protocol::LinkItemsCommand::Unlink, 4096, 6))
                   << TestScenario::create(5, TestScenario::ServerCmd, Protocol::LinkItemsResponse());
-        QTest::newRow("non-existent item only") << scenarios << Protocol::ChangeNotification() << false;
+        QTest::newRow("non-existent item only") << scenarios << Protocol::ItemChangeNotification() << false;
 
         //FIXME: All RID related operations are currently broken because we reset the collection context before every command,
         //and LINK still relies on SELECT to set the collection context.
@@ -249,7 +249,7 @@ private Q_SLOTS:
     void testUnlink()
     {
         QFETCH(TestScenario::List, scenarios);
-        QFETCH(Protocol::ChangeNotification, notification);
+        QFETCH(Protocol::ItemChangeNotification, notification);
         QFETCH(bool, expectFail);
 
         FakeAkonadiServer::instance()->setScenarios(scenarios);
@@ -260,12 +260,12 @@ private Q_SLOTS:
             QCOMPARE(notificationSpy->count(), 1);
             const Protocol::ChangeNotification::List notifications = notificationSpy->takeFirst().first().value<Protocol::ChangeNotification::List>();
             QCOMPARE(notifications.count(), 1);
-            QCOMPARE(notifications.first(), notification);
+            QCOMPARE(Protocol::ItemChangeNotification(notifications.first()), notification);
         } else {
             QVERIFY(notificationSpy->isEmpty() || notificationSpy->takeFirst().first().value<Protocol::ChangeNotification::List>().isEmpty());
         }
 
-        Q_FOREACH (const Protocol::ChangeNotification::Entity &entity, notification.entities()) {
+        Q_FOREACH (const auto &entity, notification.items()) {
             if (expectFail) {
                 QVERIFY(Collection::relatesToPimItem(notification.parentCollection(), entity.id));
             } else {

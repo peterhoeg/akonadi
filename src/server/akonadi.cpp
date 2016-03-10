@@ -82,9 +82,6 @@ AkonadiServer::AkonadiServer(QObject *parent)
     qRegisterMetaType<Protocol::ChangeNotification>();
     qRegisterMetaType<Protocol::ChangeNotification::List>();
     qRegisterMetaType<quintptr>("quintptr");
-
-    qRegisterMetaType<Protocol::ChangeNotification::Type>();
-    qDBusRegisterMetaType<Protocol::ChangeNotification::Type>();
 }
 
 bool AkonadiServer::init()
