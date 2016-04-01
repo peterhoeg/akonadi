@@ -515,14 +515,14 @@ void List::retrieveCollections(const Collection &topParent, int depth)
 bool List::parseStream()
 {
     Protocol::FetchCollectionsCommand cmd(m_command);
-
-    if (!cmd.resource().isEmpty()) {
-        mResource = Resource::retrieveByName(cmd.resource());
+    const auto fetchScope = cmd.fetchScope();
+    if (!fetchScope.resource().isEmpty()) {
+        mResource = Resource::retrieveByName(fetchScope.resource());
         if (!mResource.isValid()) {
             return failureResponse("Unknown resource");
         }
     }
-    Q_FOREACH (const QString &mtName, cmd.mimeTypes()) {
+    Q_FOREACH (const QString &mtName, fetchScope.mimeTypes()) {
         const MimeType mt = MimeType::retrieveByName(mtName);
         if (mt.isValid()) {
             mMimeTypes.append(mt.id());
@@ -535,11 +535,11 @@ bool List::parseStream()
         }
     }
 
-    mEnabledCollections = cmd.enabled();
-    mCollectionsToSynchronize = cmd.syncPref();
-    mCollectionsToDisplay = cmd.displayPref();
-    mCollectionsToIndex = cmd.indexPref();
-    mIncludeStatistics = cmd.fetchStats();
+    mEnabledCollections = fetchScope.enabled();
+    mCollectionsToSynchronize = fetchScope.syncPref();
+    mCollectionsToDisplay = fetchScope.displayPref();
+    mCollectionsToIndex = fetchScope.indexPref();
+    mIncludeStatistics = fetchScope.fetchStats();
 
     int depth = 0;
     switch (cmd.depth()) {
@@ -554,7 +554,7 @@ bool List::parseStream()
         break;
     }
 
-    switch (cmd.ancestorsDepth()) {
+    switch (fetchScope.ancestorsDepth()) {
     case Protocol::Ancestor::NoAncestor:
         mAncestorDepth = 0;
         break;
@@ -565,9 +565,9 @@ bool List::parseStream()
         mAncestorDepth = INT_MAX;
         break;
     }
-    mAncestorAttributes = cmd.ancestorsAttributes();
+    mAncestorAttributes = fetchScope.ancestorsAttributes();
 
-    Scope scope = cmd.collections();
+    const Scope scope = cmd.collections();
     if (!scope.isEmpty()) { // not root
         Collection col;
         if (scope.scope() == Scope::Uid) {

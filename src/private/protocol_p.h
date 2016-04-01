@@ -341,6 +341,54 @@ private:
 };
 
 
+class CollectionFetchScopePrivate;
+class AKONADIPRIVATE_EXPORT CollectionFetchScope
+{
+public:
+
+    explicit CollectionFetchScope();
+    CollectionFetchScope(const CollectionFetchScope &other);
+    CollectionFetchScope(CollectionFetchScope &&other);
+    ~CollectionFetchScope();
+    CollectionFetchScope &operator=(const CollectionFetchScope &other);
+    CollectionFetchScope &operator=(CollectionFetchScope &&other);
+    bool operator==(const CollectionFetchScope &other) const;
+    bool operator!=(const CollectionFetchScope &other) const;
+
+    void setResource(const QString &resourceId);
+    QString resource() const;
+
+    void setMimeTypes(const QStringList &mimeTypes);
+    QStringList mimeTypes() const;
+
+    void setAncestorsDepth(Ancestor::Depth depth);
+    Ancestor::Depth ancestorsDepth() const;
+
+    void setAncestorsAttributes(const QSet<QByteArray> &attributes);
+    QSet<QByteArray> ancestorsAttributes() const;
+
+    void setEnabled(bool enabled);
+    bool enabled() const;
+
+    void setSyncPref(bool sync);
+    bool syncPref() const;
+
+    void setDisplayPref(bool display);
+    bool displayPref() const;
+
+    void setIndexPref(bool index);
+    bool indexPref() const;
+
+    void setFetchStats(bool stats);
+    bool fetchStats() const;
+
+    void debugString(DebugBlock &blck) const;
+private:
+    QSharedDataPointer<CollectionFetchScopePrivate> d;
+
+    friend DataStream &operator<<(DataStream &stream, const CollectionFetchScope &scope);
+    friend DataStream &operator>>(DataStream &stream, CollectionFetchScope &scope);
+};
 
 
 class ScopeContextPrivate;
@@ -1327,32 +1375,8 @@ public:
     void setDepth(Depth depth);
     Depth depth() const;
 
-    void setResource(const QString &resourceId);
-    QString resource() const;
-
-    void setMimeTypes(const QStringList &mimeTypes);
-    QStringList mimeTypes() const;
-
-    void setAncestorsDepth(Ancestor::Depth depth);
-    Ancestor::Depth ancestorsDepth() const;
-
-    void setAncestorsAttributes(const QSet<QByteArray> &attributes);
-    QSet<QByteArray> ancestorsAttributes() const;
-
-    void setEnabled(bool enabled);
-    bool enabled() const;
-
-    void setSyncPref(bool sync);
-    bool syncPref() const;
-
-    void setDisplayPref(bool display);
-    bool displayPref() const;
-
-    void setIndexPref(bool index);
-    bool indexPref() const;
-
-    void setFetchStats(bool stats);
-    bool fetchStats() const;
+    CollectionFetchScope fetchScope() const;
+    void setFetchScope(const CollectionFetchScope &scope);
 
 private:
     AKONADI_DECLARE_PRIVATE(FetchCollectionsCommand)

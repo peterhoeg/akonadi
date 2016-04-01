@@ -249,43 +249,8 @@ void CollectionFetchJob::doStart()
     default:
         Q_ASSERT(false);
     }
-    cmd.setResource(d->mScope.resource());
-    cmd.setMimeTypes(d->mScope.contentMimeTypes());
 
-    switch (d->mScope.listFilter()) {
-    case CollectionFetchScope::Display:
-        cmd.setDisplayPref(true);
-        break;
-    case CollectionFetchScope::Sync:
-        cmd.setSyncPref(true);
-        break;
-    case CollectionFetchScope::Index:
-        cmd.setIndexPref(true);
-        break;
-    case CollectionFetchScope::Enabled:
-        cmd.setEnabled(true);
-        break;
-    case CollectionFetchScope::NoFilter:
-        break;
-    default:
-        Q_ASSERT(false);
-    }
-
-    cmd.setFetchStats(d->mScope.includeStatistics());
-    switch (d->mScope.ancestorRetrieval()) {
-    case CollectionFetchScope::None:
-        cmd.setAncestorsDepth(Protocol::Ancestor::NoAncestor);
-        break;
-    case CollectionFetchScope::Parent:
-        cmd.setAncestorsDepth(Protocol::Ancestor::ParentAncestor);
-        break;
-    case CollectionFetchScope::All:
-        cmd.setAncestorsDepth(Protocol::Ancestor::AllAncestors);
-        break;
-    }
-    if (d->mScope.ancestorRetrieval() != CollectionFetchScope::None) {
-        cmd.setAncestorsAttributes(d->mScope.ancestorFetchScope().attributes());
-    }
+    cmd.setFetchScope(ProtocolHelper::collectionFetchScopeToProtocol(d->mScope));
 
     d->sendCommand(cmd);
 }

@@ -82,9 +82,11 @@ public:
     {
         Protocol::FetchCollectionsCommand cmd(scope);
         cmd.setDepth(depth);
-        cmd.setAncestorsDepth(ancDepth);
-        cmd.setMimeTypes(mimeTypes);
-        cmd.setResource(resource);
+        Protocol::CollectionFetchScope fetchScope;
+        fetchScope.setAncestorsDepth(ancDepth);
+        fetchScope.setMimeTypes(mimeTypes);
+        fetchScope.setResource(resource);
+        cmd.setFetchScope(fetchScope);
         return cmd;
     }
 
@@ -280,7 +282,9 @@ private Q_SLOTS:
             TestScenario::List scenarios;
 
             auto cmd = createCommand(col3.id());
-            cmd.setDisplayPref(true);
+            Protocol::CollectionFetchScope fetchScope;
+            fetchScope.setDisplayPref(true);
+            cmd.setFetchScope(fetchScope);
             scenarios << FakeAkonadiServer::loginScenario()
                       << TestScenario::create(5, TestScenario::ClientCmd, cmd)
                       << TestScenario::create(5, TestScenario::ServerCmd, initializer->listResponse(col3))
@@ -292,7 +296,9 @@ private Q_SLOTS:
             TestScenario::List scenarios;
 
             auto cmd = createCommand(Scope(), Protocol::FetchCollectionsCommand::AllCollections);
-            cmd.setDisplayPref(true);
+            Protocol::CollectionFetchScope fetchScope;
+            fetchScope.setDisplayPref(true);
+            cmd.setFetchScope(fetchScope);
             scenarios << FakeAkonadiServer::loginScenario()
                       << TestScenario::create(5, TestScenario::ClientCmd, cmd)
                       << TestScenario::create(5, TestScenario::ServerCmd, initializer->listResponse(initializer->collection("Search")))
@@ -305,7 +311,9 @@ private Q_SLOTS:
             TestScenario::List scenarios;
 
             auto cmd = createCommand(Scope(), Protocol::FetchCollectionsCommand::AllCollections);
-            cmd.setSyncPref(true);
+            Protocol::CollectionFetchScope fetchScope;
+            fetchScope.setSyncPref(true);
+            cmd.setFetchScope(fetchScope);
             scenarios << FakeAkonadiServer::loginScenario()
                       << TestScenario::create(5, TestScenario::ClientCmd, cmd)
                       << TestScenario::create(5, TestScenario::ServerCmd, initializer->listResponse(initializer->collection("Search")))
@@ -318,7 +326,9 @@ private Q_SLOTS:
             TestScenario::List scenarios;
 
             auto cmd = createCommand(Scope(), Protocol::FetchCollectionsCommand::AllCollections);
-            cmd.setIndexPref(true);
+            Protocol::CollectionFetchScope fetchScope;
+            fetchScope.setIndexPref(true);
+            cmd.setFetchScope(fetchScope);
             scenarios << FakeAkonadiServer::loginScenario()
                       << TestScenario::create(5, TestScenario::ClientCmd, cmd)
                       << TestScenario::create(5, TestScenario::ServerCmd, initializer->listResponse(initializer->collection("Search")))
@@ -331,7 +341,9 @@ private Q_SLOTS:
             TestScenario::List scenarios;
 
             auto cmd = createCommand(Scope(), Protocol::FetchCollectionsCommand::AllCollections);
-            cmd.setEnabled(true);
+            Protocol::CollectionFetchScope fetchScope;
+            fetchScope.setEnabled(true);
+            cmd.setFetchScope(fetchScope);
             scenarios << FakeAkonadiServer::loginScenario()
                       << TestScenario::create(5, TestScenario::ClientCmd, cmd)
                       << TestScenario::create(5, TestScenario::ServerCmd, initializer->listResponse(initializer->collection("Search")))
@@ -419,7 +431,9 @@ private Q_SLOTS:
             TestScenario::List scenarios;
 
             auto cmd = createCommand(col2.id(), Protocol::FetchCollectionsCommand::BaseCollection, Protocol::Ancestor::AllAncestors);
-            cmd.setAncestorsAttributes({ "type" });
+            Protocol::CollectionFetchScope fetchScope;
+            fetchScope.setAncestorsAttributes({ "type" });
+            cmd.setFetchScope(fetchScope);
             scenarios << FakeAkonadiServer::loginScenario()
                       << TestScenario::create(5, TestScenario::ClientCmd, cmd)
                       << TestScenario::create(5, TestScenario::ServerCmd, initializer->listResponse(col2, true, true, { QLatin1String("type") }))

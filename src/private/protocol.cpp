@@ -892,6 +892,216 @@ DataStream &operator>>(DataStream &stream, FetchScope &scope)
 
 /******************************************************************************/
 
+class CollectionFetchScopePrivate : public QSharedData
+{
+public:
+    CollectionFetchScopePrivate()
+        : QSharedData()
+        , ancestorsDepth(Ancestor::NoAncestor)
+        , enabled(false)
+        , sync(false)
+        , display(false)
+        , index(false)
+        , stats(false)
+    {
+    }
+
+    CollectionFetchScopePrivate(const CollectionFetchScopePrivate &other)
+        : QSharedData(other)
+        , resource(other.resource)
+        , mimeTypes(other.mimeTypes)
+        , ancestorsAttributes(other.ancestorsAttributes)
+        , ancestorsDepth(other.ancestorsDepth)
+        , enabled(other.enabled)
+        , sync(other.sync)
+        , display(other.display)
+        , index(other.index)
+        , stats(other.stats)
+    {
+    }
+
+
+    QString resource;
+    QStringList mimeTypes;
+    QSet<QByteArray> ancestorsAttributes;
+    Ancestor::Depth ancestorsDepth;
+    bool enabled;
+    bool sync;
+    bool display;
+    bool index;
+    bool stats;
+};
+
+CollectionFetchScope::CollectionFetchScope()
+    : d(new CollectionFetchScopePrivate)
+{
+}
+
+CollectionFetchScope::CollectionFetchScope(const CollectionFetchScope &other)
+    : d(other.d)
+{
+}
+
+CollectionFetchScope::CollectionFetchScope(CollectionFetchScope &&other)
+{
+    d.swap(other.d);
+}
+
+CollectionFetchScope::~CollectionFetchScope()
+{
+}
+
+CollectionFetchScope &CollectionFetchScope::operator=(const CollectionFetchScope &other)
+{
+    d = other.d;
+    return *this;
+}
+
+CollectionFetchScope &CollectionFetchScope::operator=(CollectionFetchScope &&other)
+{
+    d.swap(other.d);
+    return *this;
+}
+
+bool CollectionFetchScope::operator==(const CollectionFetchScope &other) const
+{
+    return d->resource == other.d->resource
+        && d->mimeTypes == other.d->mimeTypes
+        && d->ancestorsDepth == other.d->ancestorsDepth
+        && d->ancestorsAttributes == other.d->ancestorsAttributes
+        && d->enabled == other.d->enabled
+        && d->sync == other.d->sync
+        && d->index == other.d->index
+        && d->stats == other.d->stats;
+}
+
+bool CollectionFetchScope::operator!=(const CollectionFetchScope &other) const
+{
+    return !(*this == other);
+}
+
+void CollectionFetchScope::setResource(const QString &resourceId)
+{
+    d->resource = resourceId;
+}
+QString CollectionFetchScope::resource() const
+{
+    return d->resource;
+}
+
+void CollectionFetchScope::setMimeTypes(const QStringList &mimeTypes)
+{
+    d->mimeTypes = mimeTypes;
+}
+QStringList CollectionFetchScope::mimeTypes() const
+{
+    return d->mimeTypes;
+}
+
+void CollectionFetchScope::setAncestorsDepth(Ancestor::Depth depth)
+{
+    d->ancestorsDepth = depth;
+}
+Ancestor::Depth CollectionFetchScope::ancestorsDepth() const
+{
+    return d->ancestorsDepth;
+}
+
+void CollectionFetchScope::setAncestorsAttributes(const QSet<QByteArray> &attributes)
+{
+    d->ancestorsAttributes = attributes;
+}
+QSet<QByteArray> CollectionFetchScope::ancestorsAttributes() const
+{
+    return d->ancestorsAttributes;
+}
+
+void CollectionFetchScope::setEnabled(bool enabled)
+{
+    d->enabled = enabled;
+}
+bool CollectionFetchScope::enabled() const
+{
+    return d->enabled;
+}
+
+void CollectionFetchScope::setSyncPref(bool sync)
+{
+    d->sync = sync;
+}
+bool CollectionFetchScope::syncPref() const
+{
+    return d->sync;
+}
+
+void CollectionFetchScope::setDisplayPref(bool display)
+{
+    d->display = display;
+}
+bool CollectionFetchScope::displayPref() const
+{
+    return d->display;
+}
+
+void CollectionFetchScope::setIndexPref(bool index)
+{
+    d->index = index;
+}
+bool CollectionFetchScope::indexPref() const
+{
+    return d->index;
+}
+
+void CollectionFetchScope::setFetchStats(bool stats)
+{
+    d->stats = stats;
+}
+bool CollectionFetchScope::fetchStats() const
+{
+    return d->stats;
+}
+
+void CollectionFetchScope::debugString(DebugBlock &blck) const
+{
+    blck.write("Resource", d->resource);
+    blck.write("Mimetypes", d->mimeTypes);
+    blck.write("Ancestors Depth", d->ancestorsDepth);
+    blck.write("Ancestors Attributes", d->ancestorsAttributes);
+    blck.write("Enabled", d->enabled);
+    blck.write("Sync", d->sync);
+    blck.write("Display", d->display);
+    blck.write("Index", d->index);
+    blck.write("Status", d->stats);
+}
+
+DataStream &operator<<(DataStream &stream, const CollectionFetchScope &scope)
+{
+    return stream << scope.d->resource
+                  << scope.d->mimeTypes
+                  << scope.d->ancestorsDepth
+                  << scope.d->ancestorsAttributes
+                  << scope.d->enabled
+                  << scope.d->sync
+                  << scope.d->display
+                  << scope.d->index
+                  << scope.d->stats;
+}
+
+DataStream &operator>>(DataStream &stream, CollectionFetchScope &scope)
+{
+    return stream >> scope.d->resource
+                  >> scope.d->mimeTypes
+                  >> scope.d->ancestorsDepth
+                  >> scope.d->ancestorsAttributes
+                  >> scope.d->enabled
+                  >> scope.d->sync
+                  >> scope.d->display
+                  >> scope.d->index
+                  >> scope.d->stats;
+}
+
+
+/******************************************************************************/
 
 
 class ScopeContextPrivate : public QSharedData
@@ -5226,74 +5436,35 @@ public:
         : CommandPrivate(Command::FetchCollections)
         , collections(collections)
         , depth(FetchCollectionsCommand::BaseCollection)
-        , ancestorsDepth(Ancestor::NoAncestor)
-        , enabled(false)
-        , sync(false)
-        , display(false)
-        , index(false)
-        , stats(false)
     {}
     FetchCollectionsCommandPrivate(const FetchCollectionsCommandPrivate &other)
         : CommandPrivate(other)
         , collections(other.collections)
-        , resource(other.resource)
-        , mimeTypes(other.mimeTypes)
-        , ancestorsAttributes(other.ancestorsAttributes)
         , depth(other.depth)
-        , ancestorsDepth(other.ancestorsDepth)
-        , enabled(other.enabled)
-        , sync(other.sync)
-        , display(other.display)
-        , index(other.index)
-        , stats(other.stats)
     {}
 
     bool compare(const CommandPrivate* other) const Q_DECL_OVERRIDE
     {
         return CommandPrivate::compare(other)
-            && COMPARE(depth)
-            && COMPARE(ancestorsDepth)
-            && COMPARE(enabled)
-            && COMPARE(sync)
-            && COMPARE(display)
-            && COMPARE(index)
-            && COMPARE(stats)
             && COMPARE(collections)
-            && COMPARE(resource)
-            && COMPARE(mimeTypes)
-            && COMPARE(ancestorsAttributes);
+            && COMPARE(fetchScope)
+            && COMPARE(depth);
     }
 
     DataStream &serialize(DataStream &stream) const Q_DECL_OVERRIDE
     {
         return CommandPrivate::serialize(stream)
                << collections
-               << resource
-               << mimeTypes
-               << depth
-               << ancestorsDepth
-               << ancestorsAttributes
-               << enabled
-               << sync
-               << display
-               << index
-               << stats;
+               << fetchScope
+               << depth;
     }
 
     DataStream &deserialize(DataStream &stream) Q_DECL_OVERRIDE
     {
         return CommandPrivate::deserialize(stream)
                >> collections
-               >> resource
-               >> mimeTypes
-               >> depth
-               >> ancestorsDepth
-               >> ancestorsAttributes
-               >> enabled
-               >> sync
-               >> display
-               >> index
-               >> stats;
+               >> fetchScope
+               >> depth;
     }
 
     void debugString(DebugBlock &blck) const Q_DECL_OVERRIDE
@@ -5301,15 +5472,9 @@ public:
         CommandPrivate::debugString(blck);
         blck.write("Collections", collections);
         blck.write("Depth", depth);
-        blck.write("Resource", resource);
-        blck.write("Mimetypes", mimeTypes);
-        blck.write("Ancestors Depth", ancestorsDepth);
-        blck.write("Ancestors Attributes", ancestorsAttributes);
-        blck.write("Enabled", enabled);
-        blck.write("Sync", sync);
-        blck.write("Display", display);
-        blck.write("Index", index);
-        blck.write("Status", stats);
+        blck.beginBlock("Fetch Scope");
+        fetchScope.debugString(blck);
+        blck.endBlock();
     }
 
     CommandPrivate *clone() const Q_DECL_OVERRIDE
@@ -5318,18 +5483,9 @@ public:
     }
 
     Scope collections;
-    QString resource;
-    QStringList mimeTypes;
-    QSet<QByteArray> ancestorsAttributes;
+    CollectionFetchScope fetchScope;
     FetchCollectionsCommand::Depth depth;
-    Ancestor::Depth ancestorsDepth;
-    bool enabled;
-    bool sync;
-    bool display;
-    bool index;
-    bool stats;
 };
-
 
 
 
@@ -5356,6 +5512,16 @@ Scope FetchCollectionsCommand::collections() const
     return d_func()->collections;
 }
 
+CollectionFetchScope FetchCollectionsCommand::fetchScope() const
+{
+    return d_func()->fetchScope;
+}
+
+void FetchCollectionsCommand::setFetchScope(const CollectionFetchScope &fetchScope)
+{
+    d_func()->fetchScope = fetchScope;
+}
+
 void FetchCollectionsCommand::setDepth(Depth depth)
 {
     d_func()->depth = depth;
@@ -5363,87 +5529,6 @@ void FetchCollectionsCommand::setDepth(Depth depth)
 FetchCollectionsCommand::Depth FetchCollectionsCommand::depth() const
 {
     return d_func()->depth;
-}
-
-void FetchCollectionsCommand::setResource(const QString &resourceId)
-{
-    d_func()->resource = resourceId;
-}
-QString FetchCollectionsCommand::resource() const
-{
-    return d_func()->resource;
-}
-
-void FetchCollectionsCommand::setMimeTypes(const QStringList &mimeTypes)
-{
-    d_func()->mimeTypes = mimeTypes;
-}
-QStringList FetchCollectionsCommand::mimeTypes() const
-{
-    return d_func()->mimeTypes;
-}
-
-void FetchCollectionsCommand::setAncestorsDepth(Ancestor::Depth depth)
-{
-    d_func()->ancestorsDepth = depth;
-}
-Ancestor::Depth FetchCollectionsCommand::ancestorsDepth() const
-{
-    return d_func()->ancestorsDepth;
-}
-
-void FetchCollectionsCommand::setAncestorsAttributes(const QSet<QByteArray> &attributes)
-{
-    d_func()->ancestorsAttributes = attributes;
-}
-QSet<QByteArray> FetchCollectionsCommand::ancestorsAttributes() const
-{
-    return d_func()->ancestorsAttributes;
-}
-
-void FetchCollectionsCommand::setEnabled(bool enabled)
-{
-    d_func()->enabled = enabled;
-}
-bool FetchCollectionsCommand::enabled() const
-{
-    return d_func()->enabled;
-}
-
-void FetchCollectionsCommand::setSyncPref(bool sync)
-{
-    d_func()->sync = sync;
-}
-bool FetchCollectionsCommand::syncPref() const
-{
-    return d_func()->sync;
-}
-
-void FetchCollectionsCommand::setDisplayPref(bool display)
-{
-    d_func()->display = display;
-}
-bool FetchCollectionsCommand::displayPref() const
-{
-    return d_func()->display;
-}
-
-void FetchCollectionsCommand::setIndexPref(bool index)
-{
-    d_func()->index = index;
-}
-bool FetchCollectionsCommand::indexPref() const
-{
-    return d_func()->index;
-}
-
-void FetchCollectionsCommand::setFetchStats(bool stats)
-{
-    d_func()->stats = stats;
-}
-bool FetchCollectionsCommand::fetchStats() const
-{
-    return d_func()->stats;
 }
 
 DataStream &operator<<(DataStream &stream, const FetchCollectionsCommand &command)

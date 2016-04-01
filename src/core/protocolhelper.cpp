@@ -28,6 +28,7 @@
 #include "itemserializerplugin.h"
 #include "servermanager.h"
 #include "tagfetchscope.h"
+#include "collectionfetchscope.h"
 #include "persistentsearchattribute.h"
 
 #include "private/protocol_p.h"
@@ -388,6 +389,50 @@ Protocol::FetchScope ProtocolHelper::itemFetchScopeToProtocol(const ItemFetchSco
     fs.setFetch(Protocol::FetchScope::VirtReferences, fetchScope.fetchVirtualReferences());
     fs.setFetch(Protocol::FetchScope::MTime, fetchScope.fetchModificationTime());
     fs.setFetch(Protocol::FetchScope::Relations, fetchScope.fetchRelations());
+
+    return fs;
+}
+
+Protocol::CollectionFetchScope ProtocolHelper::collectionFetchScopeToProtocol(const CollectionFetchScope &scope)
+{
+    Protocol::CollectionFetchScope fs;
+    fs.setResource(scope.resource());
+    fs.setMimeTypes(scope.contentMimeTypes());
+
+    switch (scope.listFilter()) {
+    case CollectionFetchScope::Display:
+        fs.setDisplayPref(true);
+        break;
+    case CollectionFetchScope::Sync:
+        fs.setSyncPref(true);
+        break;
+    case CollectionFetchScope::Index:
+        fs.setIndexPref(true);
+        break;
+    case CollectionFetchScope::Enabled:
+        fs.setEnabled(true);
+        break;
+    case CollectionFetchScope::NoFilter:
+        break;
+    default:
+        Q_ASSERT(false);
+    }
+
+    fs.setFetchStats(scope.includeStatistics());
+    switch (scope.ancestorRetrieval()) {
+    case CollectionFetchScope::None:
+        fs.setAncestorsDepth(Protocol::Ancestor::NoAncestor);
+        break;
+    case CollectionFetchScope::Parent:
+        fs.setAncestorsDepth(Protocol::Ancestor::ParentAncestor);
+        break;
+    case CollectionFetchScope::All:
+        fs.setAncestorsDepth(Protocol::Ancestor::AllAncestors);
+        break;
+    }
+    if (scope.ancestorRetrieval() != CollectionFetchScope::None) {
+        fs.setAncestorsAttributes(scope.ancestorFetchScope().attributes());
+    }
 
     return fs;
 }

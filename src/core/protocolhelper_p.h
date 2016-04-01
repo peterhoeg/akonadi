@@ -43,6 +43,8 @@
 namespace Akonadi
 {
 
+class CollectionFetchScope;
+
 struct ProtocolHelperValuePool {
     typedef Internal::SharedValuePool<QByteArray, QVector> FlagPool;
     typedef Internal::SharedValuePool<QString, QVector> MimeTypePool;
@@ -229,6 +231,11 @@ public:
       Converts a given TagFetchScope object into a protocol representation.
     */
     static QVector<QByteArray> tagFetchScopeToProtocol(const TagFetchScope &fetchScope);
+
+    /**
+     Converts a given CollectionFetchScope object into a protocol represenation.
+    */
+    static Protocol::CollectionFetchScope collectionFetchScopeToProtocol(const CollectionFetchScope &fetchScope);
 
     /**
       Parses a single line from an item fetch job result into an Item object.

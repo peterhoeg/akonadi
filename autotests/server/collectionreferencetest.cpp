@@ -84,8 +84,10 @@ private Q_SLOTS:
         {
             Protocol::FetchCollectionsCommand cmd;
             cmd.setDepth(Protocol::FetchCollectionsCommand::AllCollections);
-            cmd.setResource(QLatin1String("testresource"));
-            cmd.setEnabled(true);
+            Protocol::CollectionFetchScope fetchScope;
+            fetchScope.setResource(QLatin1String("testresource"));
+            fetchScope.setEnabled(true);
+            cmd.setFetchScope(fetchScope);
 
             TestScenario::List scenarios;
             scenarios << FakeAkonadiServer::loginScenario()
@@ -116,7 +118,9 @@ private Q_SLOTS:
 
             Protocol::FetchCollectionsCommand listCmd(initializer.collection("col2").id());
             listCmd.setDepth(Protocol::FetchCollectionsCommand::BaseCollection);
-            listCmd.setEnabled(true);
+            Protocol::CollectionFetchScope fetchScope;
+            fetchScope.setEnabled(true);
+            listCmd.setFetchScope(fetchScope);
 
             Collection col2 = initializer.collection("col2");
             col2.setReferenced(true);
@@ -138,9 +142,11 @@ private Q_SLOTS:
             cmd.setReferenced(true);
 
             Protocol::FetchCollectionsCommand listCmd;
-            listCmd.setResource(QLatin1String("testresource"));
-            listCmd.setEnabled(true);
             listCmd.setDepth(Protocol::FetchCollectionsCommand::ParentCollection);
+            Protocol::CollectionFetchScope fetchScope;
+            fetchScope.setEnabled(true);
+            fetchScope.setResource(QLatin1String("testresource"));
+            listCmd.setFetchScope(fetchScope);
 
             Collection col2 = initializer.collection("col2");
             col2.setReferenced(true);
