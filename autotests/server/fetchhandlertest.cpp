@@ -64,7 +64,7 @@ public:
     Protocol::FetchItemsCommand createCommand(const Scope &scope, const Protocol::ScopeContext &ctx = Protocol::ScopeContext())
     {
         Protocol::FetchItemsCommand cmd(scope, ctx);
-        cmd.fetchScope().setFetch(Protocol::FetchScope::IgnoreErrors);
+        cmd.fetchScope().setFetch(Protocol::ItemFetchScope::IgnoreErrors);
         return cmd;;
     }
 

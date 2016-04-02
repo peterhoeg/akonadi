@@ -73,7 +73,7 @@ using namespace Akonadi::Server;
 #endif
 
 FetchHelper::FetchHelper(Connection *connection, const Scope &scope,
-                         const Protocol::FetchScope &fetchScope)
+                         const Protocol::ItemFetchScope &fetchScope)
     : mConnection(connection)
     , mScope(scope)
     , mFetchScope(fetchScope)

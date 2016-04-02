@@ -328,9 +328,9 @@ Scope ProtocolHelper::hierarchicalRidToScope(const Item &item)
     return Scope(QVector<Scope::HRID>({ Scope::HRID(item.id(), item.remoteId()) }) + hierarchicalRidToScope(item.parentCollection()).hridChain());
 }
 
-Protocol::FetchScope ProtocolHelper::itemFetchScopeToProtocol(const ItemFetchScope &fetchScope)
+Protocol::ItemFetchScope ProtocolHelper::itemFetchScopeToProtocol(const ItemFetchScope &fetchScope)
 {
-    Protocol::FetchScope fs;
+    Protocol::ItemFetchScope fs;
     QVector<QByteArray> parts;
     parts.reserve(fetchScope.payloadParts().size() + fetchScope.attributes().size());
     Q_FOREACH (const QByteArray &part, fetchScope.payloadParts()) {
@@ -342,17 +342,17 @@ Protocol::FetchScope ProtocolHelper::itemFetchScopeToProtocol(const ItemFetchSco
     fs.setRequestedParts(parts);
 
     // The default scope
-    fs.setFetch(Protocol::FetchScope::Flags |
-                Protocol::FetchScope::Size |
-                Protocol::FetchScope::RemoteID |
-                Protocol::FetchScope::RemoteRevision |
-                Protocol::FetchScope::MTime);
+    fs.setFetch(Protocol::ItemFetchScope::Flags |
+                Protocol::ItemFetchScope::Size |
+                Protocol::ItemFetchScope::RemoteID |
+                Protocol::ItemFetchScope::RemoteRevision |
+                Protocol::ItemFetchScope::MTime);
 
-    fs.setFetch(Protocol::FetchScope::FullPayload, fetchScope.fullPayload());
-    fs.setFetch(Protocol::FetchScope::AllAttributes, fetchScope.allAttributes());
-    fs.setFetch(Protocol::FetchScope::CacheOnly, fetchScope.cacheOnly());
-    fs.setFetch(Protocol::FetchScope::CheckCachedPayloadPartsOnly, fetchScope.checkForCachedPayloadPartsOnly());
-    fs.setFetch(Protocol::FetchScope::IgnoreErrors, fetchScope.ignoreRetrievalErrors());
+    fs.setFetch(Protocol::ItemFetchScope::FullPayload, fetchScope.fullPayload());
+    fs.setFetch(Protocol::ItemFetchScope::AllAttributes, fetchScope.allAttributes());
+    fs.setFetch(Protocol::ItemFetchScope::CacheOnly, fetchScope.cacheOnly());
+    fs.setFetch(Protocol::ItemFetchScope::CheckCachedPayloadPartsOnly, fetchScope.checkForCachedPayloadPartsOnly());
+    fs.setFetch(Protocol::ItemFetchScope::IgnoreErrors, fetchScope.ignoreRetrievalErrors());
     if (fetchScope.ancestorRetrieval() != ItemFetchScope::None) {
         switch (fetchScope.ancestorRetrieval()) {
         case ItemFetchScope::Parent:
@@ -372,11 +372,11 @@ Protocol::FetchScope ProtocolHelper::itemFetchScopeToProtocol(const ItemFetchSco
         fs.setChangedSince(fetchScope.fetchChangedSince());
     }
 
-    fs.setFetch(Protocol::FetchScope::RemoteID, fetchScope.fetchRemoteIdentification());
-    fs.setFetch(Protocol::FetchScope::RemoteRevision, fetchScope.fetchRemoteIdentification());
-    fs.setFetch(Protocol::FetchScope::GID, fetchScope.fetchGid());
+    fs.setFetch(Protocol::ItemFetchScope::RemoteID, fetchScope.fetchRemoteIdentification());
+    fs.setFetch(Protocol::ItemFetchScope::RemoteRevision, fetchScope.fetchRemoteIdentification());
+    fs.setFetch(Protocol::ItemFetchScope::GID, fetchScope.fetchGid());
     if (fetchScope.fetchTags()) {
-        fs.setFetch(Protocol::FetchScope::Tags);
+        fs.setFetch(Protocol::ItemFetchScope::Tags);
         if (!fetchScope.tagFetchScope().fetchIdOnly()) {
             if (fetchScope.tagFetchScope().attributes().isEmpty()) {
                 fs.setTagFetchScope({ "ALL" });
@@ -386,9 +386,9 @@ Protocol::FetchScope ProtocolHelper::itemFetchScopeToProtocol(const ItemFetchSco
         }
     }
 
-    fs.setFetch(Protocol::FetchScope::VirtReferences, fetchScope.fetchVirtualReferences());
-    fs.setFetch(Protocol::FetchScope::MTime, fetchScope.fetchModificationTime());
-    fs.setFetch(Protocol::FetchScope::Relations, fetchScope.fetchRelations());
+    fs.setFetch(Protocol::ItemFetchScope::VirtReferences, fetchScope.fetchVirtualReferences());
+    fs.setFetch(Protocol::ItemFetchScope::MTime, fetchScope.fetchModificationTime());
+    fs.setFetch(Protocol::ItemFetchScope::Relations, fetchScope.fetchRelations());
 
     return fs;
 }

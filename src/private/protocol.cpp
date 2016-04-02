@@ -667,15 +667,15 @@ Command deserialize(QIODevice *device)
 
 
 
-class FetchScopePrivate : public QSharedData
+class ItemFetchScopePrivate : public QSharedData
 {
 public:
-    FetchScopePrivate()
-        : fetchFlags(FetchScope::None)
+    ItemFetchScopePrivate()
+        : fetchFlags(ItemFetchScope::None)
         , ancestorDepth(Ancestor::NoAncestor)
     {}
 
-    FetchScope::FetchFlags fetchFlags;
+    ItemFetchScope::FetchFlags fetchFlags;
     QVector<QByteArray> requestedParts;
     QDateTime changedSince;
     QSet<QByteArray> tagFetchScope;
@@ -685,39 +685,39 @@ public:
 
 
 
-FetchScope::FetchScope()
-    : d(new FetchScopePrivate)
+ItemFetchScope::ItemFetchScope()
+    : d(new ItemFetchScopePrivate)
 {
 }
 
 
-FetchScope::FetchScope(FetchScope &&other)
+ItemFetchScope::ItemFetchScope(ItemFetchScope &&other)
 {
     d.swap(other.d);
 }
 
-FetchScope::FetchScope(const FetchScope &other)
+ItemFetchScope::ItemFetchScope(const ItemFetchScope &other)
     : d(other.d)
 {
 }
 
-FetchScope::~FetchScope()
+ItemFetchScope::~ItemFetchScope()
 {
 }
 
-FetchScope &FetchScope::operator=(FetchScope &&other)
+ItemFetchScope &ItemFetchScope::operator=(ItemFetchScope &&other)
 {
     d.swap(other.d);
     return *this;
 }
 
-FetchScope &FetchScope::operator=(const FetchScope &other)
+ItemFetchScope &ItemFetchScope::operator=(const ItemFetchScope &other)
 {
     d = other.d;
     return *this;
 }
 
-bool FetchScope::operator==(const FetchScope &other) const
+bool ItemFetchScope::operator==(const ItemFetchScope &other) const
 {
     return (d == other.d)
         || (d->requestedParts == other.d->requestedParts
@@ -727,22 +727,22 @@ bool FetchScope::operator==(const FetchScope &other) const
             && d->fetchFlags == other.d->fetchFlags);
 }
 
-bool FetchScope::operator!=(const FetchScope &other) const
+bool ItemFetchScope::operator!=(const ItemFetchScope &other) const
 {
     return !(*this == other);
 }
 
-void FetchScope::setRequestedParts(const QVector<QByteArray> &requestedParts)
+void ItemFetchScope::setRequestedParts(const QVector<QByteArray> &requestedParts)
 {
     d->requestedParts = requestedParts;
 }
 
-QVector<QByteArray> FetchScope::requestedParts() const
+QVector<QByteArray> ItemFetchScope::requestedParts() const
 {
     return d->requestedParts;
 }
 
-QVector<QByteArray> FetchScope::requestedPayloads() const
+QVector<QByteArray> ItemFetchScope::requestedPayloads() const
 {
     QVector<QByteArray> rv;
     std::copy_if(d->requestedParts.begin(), d->requestedParts.end(),
@@ -751,95 +751,95 @@ QVector<QByteArray> FetchScope::requestedPayloads() const
     return rv;
 }
 
-void FetchScope::setChangedSince(const QDateTime &changedSince)
+void ItemFetchScope::setChangedSince(const QDateTime &changedSince)
 {
     d->changedSince = changedSince;
 }
 
-QDateTime FetchScope::changedSince() const
+QDateTime ItemFetchScope::changedSince() const
 {
     return d->changedSince;
 }
 
-void FetchScope::setTagFetchScope(const QSet<QByteArray> &tagFetchScope)
+void ItemFetchScope::setTagFetchScope(const QSet<QByteArray> &tagFetchScope)
 {
     d->tagFetchScope = tagFetchScope;
 }
 
-QSet<QByteArray> FetchScope::tagFetchScope() const
+QSet<QByteArray> ItemFetchScope::tagFetchScope() const
 {
     return d->tagFetchScope;
 }
 
-void FetchScope::setAncestorDepth(Ancestor::Depth depth)
+void ItemFetchScope::setAncestorDepth(Ancestor::Depth depth)
 {
     d->ancestorDepth = depth;
 }
 
-Ancestor::Depth FetchScope::ancestorDepth() const
+Ancestor::Depth ItemFetchScope::ancestorDepth() const
 {
     return d->ancestorDepth;
 }
 
-bool FetchScope::cacheOnly() const
+bool ItemFetchScope::cacheOnly() const
 {
     return d->fetchFlags & CacheOnly;
 }
 
-bool FetchScope::checkCachedPayloadPartsOnly() const
+bool ItemFetchScope::checkCachedPayloadPartsOnly() const
 {
     return d->fetchFlags & CheckCachedPayloadPartsOnly;
 }
-bool FetchScope::fullPayload() const
+bool ItemFetchScope::fullPayload() const
 {
     return d->fetchFlags & FullPayload;
 }
-bool FetchScope::allAttributes() const
+bool ItemFetchScope::allAttributes() const
 {
     return d->fetchFlags & AllAttributes;
 }
-bool FetchScope::fetchSize() const
+bool ItemFetchScope::fetchSize() const
 {
     return d->fetchFlags & Size;
 }
-bool FetchScope::fetchMTime() const
+bool ItemFetchScope::fetchMTime() const
 {
     return d->fetchFlags & MTime;
 }
-bool FetchScope::fetchRemoteRevision() const
+bool ItemFetchScope::fetchRemoteRevision() const
 {
     return d->fetchFlags & RemoteRevision;
 }
-bool FetchScope::ignoreErrors() const
+bool ItemFetchScope::ignoreErrors() const
 {
     return d->fetchFlags & IgnoreErrors;
 }
-bool FetchScope::fetchFlags() const
+bool ItemFetchScope::fetchFlags() const
 {
     return d->fetchFlags & Flags;
 }
-bool FetchScope::fetchRemoteId() const
+bool ItemFetchScope::fetchRemoteId() const
 {
     return d->fetchFlags & RemoteID;
 }
-bool FetchScope::fetchGID() const
+bool ItemFetchScope::fetchGID() const
 {
     return d->fetchFlags & GID;
 }
-bool FetchScope::fetchTags() const
+bool ItemFetchScope::fetchTags() const
 {
     return d->fetchFlags & Tags;
 }
-bool FetchScope::fetchRelations() const
+bool ItemFetchScope::fetchRelations() const
 {
     return d->fetchFlags & Relations;
 }
-bool FetchScope::fetchVirtualReferences() const
+bool ItemFetchScope::fetchVirtualReferences() const
 {
     return d->fetchFlags & VirtReferences;
 }
 
-void FetchScope::setFetch(FetchFlags attributes, bool fetch)
+void ItemFetchScope::setFetch(FetchFlags attributes, bool fetch)
 {
     if (fetch) {
         d->fetchFlags |= attributes;
@@ -854,7 +854,7 @@ void FetchScope::setFetch(FetchFlags attributes, bool fetch)
 }
 
 
-bool FetchScope::fetch(FetchFlags flags) const
+bool ItemFetchScope::fetch(FetchFlags flags) const
 {
     if (flags == None) {
         return d->fetchFlags == None;
@@ -863,7 +863,7 @@ bool FetchScope::fetch(FetchFlags flags) const
     }
 }
 
-void FetchScope::debugString(DebugBlock &blck) const
+void ItemFetchScope::debugString(DebugBlock &blck) const
 {
     blck.write("Fetch Flags", d->fetchFlags);
     blck.write("Tag Fetch Scope", d->tagFetchScope);
@@ -872,7 +872,7 @@ void FetchScope::debugString(DebugBlock &blck) const
     blck.write("Requested Parts", d->requestedParts);
 }
 
-DataStream &operator<<(DataStream &stream, const FetchScope &scope)
+DataStream &operator<<(DataStream &stream, const ItemFetchScope &scope)
 {
     return stream << scope.d->requestedParts
                   << scope.d->changedSince
@@ -881,7 +881,7 @@ DataStream &operator<<(DataStream &stream, const FetchScope &scope)
                   << scope.d->fetchFlags;
 }
 
-DataStream &operator>>(DataStream &stream, FetchScope &scope)
+DataStream &operator>>(DataStream &stream, ItemFetchScope &scope)
 {
     return stream >> scope.d->requestedParts
                   >> scope.d->changedSince
@@ -3361,7 +3361,7 @@ class FetchItemsCommandPrivate : public CommandPrivate
 public:
     FetchItemsCommandPrivate(const Scope &scope = Scope(),
                              const ScopeContext &context = ScopeContext(),
-                             const FetchScope &fetchScope = FetchScope())
+                             const ItemFetchScope &fetchScope = ItemFetchScope())
         : CommandPrivate(Command::FetchItems)
         , scope(scope)
         , scopeContext(context)
@@ -3418,7 +3418,7 @@ public:
 
     Scope scope;
     ScopeContext scopeContext;
-    FetchScope fetchScope;
+    ItemFetchScope fetchScope;
 };
 
 
@@ -3431,13 +3431,13 @@ FetchItemsCommand::FetchItemsCommand()
 {
 }
 
-FetchItemsCommand::FetchItemsCommand(const Scope &scope, const FetchScope &fetchScope)
+FetchItemsCommand::FetchItemsCommand(const Scope &scope, const ItemFetchScope &fetchScope)
     : Command(new FetchItemsCommandPrivate(scope, ScopeContext(), fetchScope))
 {
 }
 
 FetchItemsCommand::FetchItemsCommand(const Scope &scope, const ScopeContext &context,
-                                     const FetchScope &fetchScope)
+                                     const ItemFetchScope &fetchScope)
     : Command(new FetchItemsCommandPrivate(scope, context, fetchScope))
 {
 }
@@ -3458,12 +3458,12 @@ ScopeContext FetchItemsCommand::scopeContext() const
     return d_func()->scopeContext;
 }
 
-FetchScope FetchItemsCommand::fetchScope() const
+ItemFetchScope FetchItemsCommand::fetchScope() const
 {
     return d_func()->fetchScope;
 }
 
-FetchScope &FetchItemsCommand::fetchScope()
+ItemFetchScope &FetchItemsCommand::fetchScope()
 {
     return d_func()->fetchScope;
 }
@@ -6612,7 +6612,7 @@ public:
     QStringList mimeTypes;
     QVector<qint64> collections;
     QString query;
-    FetchScope fetchScope;
+    ItemFetchScope fetchScope;
     bool recursive;
     bool remote;
 };
@@ -6660,11 +6660,11 @@ QString SearchCommand::query() const
     return d_func()->query;
 }
 
-void SearchCommand::setFetchScope(const FetchScope &fetchScope)
+void SearchCommand::setFetchScope(const ItemFetchScope &fetchScope)
 {
     d_func()->fetchScope = fetchScope;
 }
-FetchScope SearchCommand::fetchScope() const
+ItemFetchScope SearchCommand::fetchScope() const
 {
     return d_func()->fetchScope;
 }

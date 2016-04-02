@@ -225,7 +225,7 @@ public:
     /**
       Converts a given ItemFetchScope object into a protocol representation.
     */
-    static Protocol::FetchScope itemFetchScopeToProtocol(const ItemFetchScope &fetchScope);
+    static Protocol::ItemFetchScope itemFetchScopeToProtocol(const ItemFetchScope &fetchScope);
 
     /**
       Converts a given TagFetchScope object into a protocol representation.

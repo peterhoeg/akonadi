@@ -291,18 +291,18 @@ bool AkAppend::sendResponse(const PimItem& item, Protocol::CreateItemCommand::Me
         return true;
     }
 
-    Protocol::FetchScope fetchScope;
+    Protocol::ItemFetchScope fetchScope;
     fetchScope.setAncestorDepth(Protocol::Ancestor::ParentAncestor);
-    fetchScope.setFetch(Protocol::FetchScope::AllAttributes |
-                        Protocol::FetchScope::FullPayload |
-                        Protocol::FetchScope::CacheOnly |
-                        Protocol::FetchScope::Flags |
-                        Protocol::FetchScope::GID |
-                        Protocol::FetchScope::MTime |
-                        Protocol::FetchScope::RemoteID |
-                        Protocol::FetchScope::RemoteRevision |
-                        Protocol::FetchScope::Size |
-                        Protocol::FetchScope::Tags);
+    fetchScope.setFetch(Protocol::ItemFetchScope::AllAttributes |
+                        Protocol::ItemFetchScope::FullPayload |
+                        Protocol::ItemFetchScope::CacheOnly |
+                        Protocol::ItemFetchScope::Flags |
+                        Protocol::ItemFetchScope::GID |
+                        Protocol::ItemFetchScope::MTime |
+                        Protocol::ItemFetchScope::RemoteID |
+                        Protocol::ItemFetchScope::RemoteRevision |
+                        Protocol::ItemFetchScope::Size |
+                        Protocol::ItemFetchScope::Tags);
     fetchScope.setTagFetchScope({ "GID" });
 
     ImapSet set;

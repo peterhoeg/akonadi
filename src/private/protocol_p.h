@@ -267,8 +267,8 @@ private:
 
 
 
-class FetchScopePrivate;
-class AKONADIPRIVATE_EXPORT FetchScope
+class ItemFetchScopePrivate;
+class AKONADIPRIVATE_EXPORT ItemFetchScope
 {
 public:
     enum FetchFlag : int {
@@ -290,16 +290,16 @@ public:
     };
     Q_DECLARE_FLAGS(FetchFlags, FetchFlag)
 
-    explicit FetchScope();
-    FetchScope(FetchScope &&other);
-    FetchScope(const FetchScope &other);
-    ~FetchScope();
+    explicit ItemFetchScope();
+    ItemFetchScope(ItemFetchScope &&other);
+    ItemFetchScope(const ItemFetchScope &other);
+    ~ItemFetchScope();
 
-    FetchScope &operator=(FetchScope &&other);
-    FetchScope &operator=(const FetchScope &other);
+    ItemFetchScope &operator=(ItemFetchScope &&other);
+    ItemFetchScope &operator=(const ItemFetchScope &other);
 
-    bool operator==(const FetchScope &other) const;
-    bool operator!=(const FetchScope &other) const;
+    bool operator==(const ItemFetchScope &other) const;
+    bool operator!=(const ItemFetchScope &other) const;
 
     void setRequestedParts(const QVector<QByteArray> &requestedParts);
     QVector<QByteArray> requestedParts() const;
@@ -334,10 +334,10 @@ public:
 
     void debugString(DebugBlock &blck) const;
 private:
-    QSharedDataPointer<FetchScopePrivate> d;
+    QSharedDataPointer<ItemFetchScopePrivate> d;
 
-    friend DataStream &operator<<(DataStream &stream, const Akonadi::Protocol::FetchScope &scope);
-    friend DataStream &operator>>(DataStream &stream, Akonadi::Protocol::FetchScope &scope);
+    friend DataStream &operator<<(DataStream &stream, const Akonadi::Protocol::ItemFetchScope &scope);
+    friend DataStream &operator>>(DataStream &stream, Akonadi::Protocol::ItemFetchScope &scope);
 };
 
 
@@ -915,15 +915,15 @@ class AKONADIPRIVATE_EXPORT FetchItemsCommand : public Command
 {
 public:
     explicit FetchItemsCommand();
-    explicit FetchItemsCommand(const Scope &scope, const FetchScope &fetchScope = FetchScope());
+    explicit FetchItemsCommand(const Scope &scope, const ItemFetchScope &fetchScope = ItemFetchScope());
     explicit FetchItemsCommand(const Scope &scope, const ScopeContext &ctx,
-                               const FetchScope &fetchScope = FetchScope());
+                               const ItemFetchScope &fetchScope = ItemFetchScope());
     FetchItemsCommand(const Command &command);
 
     Scope scope() const;
     ScopeContext scopeContext() const;
-    FetchScope fetchScope() const;
-    FetchScope &fetchScope();
+    ItemFetchScope fetchScope() const;
+    ItemFetchScope &fetchScope();
 
 private:
     AKONADI_DECLARE_PRIVATE(FetchItemsCommand)
@@ -1614,8 +1614,8 @@ public:
     void setQuery(const QString &query);
     QString query() const;
 
-    void setFetchScope(const FetchScope &fetchScope);
-    FetchScope fetchScope() const;
+    void setFetchScope(const ItemFetchScope &fetchScope);
+    ItemFetchScope fetchScope() const;
 
     void setRecursive(bool recursive);
     bool recursive() const;
@@ -2573,7 +2573,7 @@ private:
 } // namespace Protocol
 } // namespace Akonadi
 
-Q_DECLARE_OPERATORS_FOR_FLAGS(Akonadi::Protocol::FetchScope::FetchFlags)
+Q_DECLARE_OPERATORS_FOR_FLAGS(Akonadi::Protocol::ItemFetchScope::FetchFlags)
 Q_DECLARE_METATYPE(Akonadi::Protocol::Command::Type)
 Q_DECLARE_METATYPE(Akonadi::Protocol::Command)
 Q_DECLARE_METATYPE(Akonadi::Protocol::ChangeNotification)
