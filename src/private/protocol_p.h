@@ -2387,6 +2387,8 @@ public:
         AllFlag         = 1 << 6,
         ExclusiveFlag   = 1 << 7,
         Sessions        = 1 << 8,
+        ItemFetchScope  = 1 << 9,
+        CollectionFetchScope = 1 << 10,
 
         Add             = 1 << 14,
         Remove          = 1 << 15
@@ -2452,6 +2454,12 @@ public:
     void setExclusive(bool exclusive);
     bool isExclusive() const;
 
+    void setItemFetchScope(const Protocol::ItemFetchScope &fetchScope);
+    Protocol::ItemFetchScope itemFetchScope() const;
+
+    void etCollectionFetchScope(const Protocol::CollectionFetchScope &fetchScope);
+    Protocol::CollectionFetchScope collectionFetchScope() const;
+
     void startIgnoringSession(const QByteArray &sessionId);
     QVector<QByteArray> startIgnoringSessions() const;
 
@@ -2502,7 +2510,9 @@ public:
         Resources       = 1 << 5,
         IgnoredSessions = 1 << 6,
         Monitored       = 1 << 7,
-        Exclusive       = 1 << 8
+        Exclusive       = 1 << 8,
+        ItemFetchScope  = 1 << 9,
+        CollectionFetchScope = 1 << 10
     };
     Q_DECLARE_FLAGS(ModifiedParts, ModifiedPart)
 
@@ -2557,6 +2567,12 @@ public:
 
     bool isExclusive() const;
     void setExclusive(bool exclusive);
+
+    Protocol::ItemFetchScope itemFetchScope() const;
+    void setItemFetchScope(const Protocol::ItemFetchScope &fetchScope);
+
+    Protocol::CollectionFetchScope collectionFetchScope() const;
+    void setCollectionFetchScope(const Protocol::CollectionFetchScope &fetchScope);
 
 private:
     AKONADI_DECLARE_PRIVATE(SubscriptionChangeNotification)

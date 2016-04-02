@@ -9459,6 +9459,8 @@ public:
         , stopMimeTypes(other.stopMimeTypes)
         , startSessions(other.startSessions)
         , stopSessions(other.stopSessions)
+        , itemFetchScope(other.itemFetchScope)
+        , collectionFetchScope(other.collectionFetchScope)
         , monitorAll(other.monitorAll)
         , exclusive(other.exclusive)
     {
@@ -9484,7 +9486,9 @@ public:
             && COMPARE(startSessions)
             && COMPARE(stopSessions)
             && COMPARE(monitorAll)
-            && COMPARE(exclusive);
+            && COMPARE(exclusive)
+            && COMPARE(itemFetchScope)
+            && COMPARE(collectionFetchScope);
     }
 
     void debugString(DebugBlock &blck) const Q_DECL_OVERRIDE
@@ -9541,6 +9545,16 @@ public:
         if (modifiedParts & ModifySubscriptionCommand::ExclusiveFlag) {
             blck.write("Exclusive", exclusive);
         }
+        if (modifiedParts & ModifySubscriptionCommand::ItemFetchScope) {
+            blck.beginBlock("Item Fetch Scope");
+            itemFetchScope.debugString(blck);
+            blck.endBlock();
+        }
+        if (modifiedParts & ModifySubscriptionCommand::CollectionFetchScope) {
+            blck.beginBlock("Collection Fetch Scope");
+            collectionFetchScope.debugString(blck);
+            blck.endBlock();
+        }
     }
 
     DataStream &serialize(DataStream &stream) const Q_DECL_OVERRIDE
@@ -9595,6 +9609,12 @@ public:
         }
         if (modifiedParts & ModifySubscriptionCommand::ExclusiveFlag) {
             stream << exclusive;
+        }
+        if (modifiedParts & ModifySubscriptionCommand::ItemFetchScope) {
+            stream << itemFetchScope;
+        }
+        if (modifiedParts & ModifySubscriptionCommand::CollectionFetchScope) {
+            stream << collectionFetchScope;
         }
         return stream;
     }
@@ -9652,6 +9672,12 @@ public:
         if (modifiedParts & ModifySubscriptionCommand::ExclusiveFlag) {
             stream >> exclusive;
         }
+        if (modifiedParts & ModifySubscriptionCommand::ItemFetchScope) {
+            stream >> itemFetchScope;
+        }
+        if (modifiedParts & ModifySubscriptionCommand::CollectionFetchScope) {
+            stream >> collectionFetchScope;
+        }
         return stream;
     }
 
@@ -9677,6 +9703,8 @@ public:
     QStringList stopMimeTypes;
     QVector<QByteArray> startSessions;
     QVector<QByteArray> stopSessions;
+    ItemFetchScope itemFetchScope;
+    CollectionFetchScope collectionFetchScope;
     bool monitorAll;
     bool exclusive;
 };
@@ -9952,6 +9980,8 @@ public:
         , removedResources(other.removedResources)
         , addedIgnoredSessions(other.addedIgnoredSessions)
         , removedIgnoredSessions(other.removedIgnoredSessions)
+        , itemFetchScope(other.itemFetchScope)
+        , collectionFetchScope(other.collectionFetchScope)
         , modifiedParts(other.modifiedParts)
         , operation(other.operation)
         , isAllMonitored(other.isAllMonitored)
@@ -9979,7 +10009,9 @@ public:
             && COMPARE(addedIgnoredSessions)
             && COMPARE(removedIgnoredSessions)
             && COMPARE(isAllMonitored)
-            && COMPARE(isExclusive);
+            && COMPARE(isExclusive)
+            && COMPARE(itemFetchScope)
+            && COMPARE(collectionFetchScope);
     }
 
     void debugString(DebugBlock &blck) const Q_DECL_OVERRIDE
@@ -10022,6 +10054,16 @@ public:
         if (modifiedParts & SubscriptionChangeNotification::Exclusive) {
             blck.write("Is exclusive", isExclusive);
         }
+        if (modifiedParts & SubscriptionChangeNotification::ItemFetchScope) {
+            blck.beginBlock("Item Fetch Scope");
+            itemFetchScope.debugString(blck);
+            blck.endBlock();
+        }
+        if (modifiedParts & SubscriptionChangeNotification::CollectionFetchScope) {
+            blck.beginBlock("Collection Fetch Scope");
+            collectionFetchScope.debugString(blck);
+            blck.endBlock();
+        }
     }
 
     DataStream &serialize(DataStream &stream) const Q_DECL_OVERRIDE
@@ -10063,6 +10105,12 @@ public:
         }
         if (modifiedParts & SubscriptionChangeNotification::Exclusive) {
             stream << isExclusive;
+        }
+        if (modifiedParts & SubscriptionChangeNotification::ItemFetchScope) {
+            stream << itemFetchScope;
+        }
+        if (modifiedParts & SubscriptionChangeNotification::CollectionFetchScope) {
+            stream << collectionFetchScope;
         }
         return stream;
     }
@@ -10107,6 +10155,12 @@ public:
         if (modifiedParts & SubscriptionChangeNotification::Exclusive) {
             stream >> isExclusive;
         }
+        if (modifiedParts & SubscriptionChangeNotification::ItemFetchScope) {
+            stream >> itemFetchScope;
+        }
+        if (modifiedParts & SubscriptionChangeNotification::CollectionFetchScope) {
+            stream >> collectionFetchScope;
+        }
         return stream;
     }
 
@@ -10130,6 +10184,8 @@ public:
     QSet<QByteArray> removedResources;
     QSet<QByteArray> addedIgnoredSessions;
     QSet<QByteArray> removedIgnoredSessions;
+    ItemFetchScope itemFetchScope;
+    CollectionFetchScope collectionFetchScope;
     SubscriptionChangeNotification::ModifiedParts modifiedParts;
     SubscriptionChangeNotification::Operation operation;
     bool isAllMonitored;
@@ -10348,6 +10404,28 @@ void SubscriptionChangeNotification::setExclusive(bool isExclusive)
 {
     d_func()->isExclusive = isExclusive;
     d_func()->modifiedParts |= Exclusive;
+}
+
+ItemFetchScope SubscriptionChangeNotification::itemFetchScope() const
+{
+    return d_func()->itemFetchScope;
+}
+
+void SubscriptionChangeNotification::setItemFetchScope(const Protocol::ItemFetchScope &fetchScope)
+{
+    d_func()->itemFetchScope = fetchScope;
+    d_func()->modifiedParts |= ItemFetchScope;
+}
+
+CollectionFetchScope SubscriptionChangeNotification::collectionFetchScope() const
+{
+    return d_func()->collectionFetchScope;
+}
+
+void SubscriptionChangeNotification::setCollectionFetchScope(const Protocol::CollectionFetchScope &fetchScope)
+{
+    d_func()->collectionFetchScope = fetchScope;
+    d_func()->modifiedParts |= CollectionFetchScope;
 }
 
 DataStream &operator<<(DataStream &stream, const SubscriptionChangeNotification &ntf)
