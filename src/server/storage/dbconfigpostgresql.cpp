@@ -140,7 +140,6 @@ bool DbConfigPostgresql::init(QSettings &settings)
     // determine default settings depending on the driver
     QString defaultHostName;
     QString defaultOptions;
-    QString defaultServerPath;
     QString defaultInitDbPath;
     QString defaultPgUpgradePath;
     QString defaultPgData;
@@ -153,12 +152,10 @@ bool DbConfigPostgresql::init(QSettings &settings)
 
     mInternalServer = settings.value(QStringLiteral("QPSQL/StartServer"), defaultInternalServer).toBool();
     if (mInternalServer) {
-        const auto paths = postgresSearchPaths(QStringLiteral("/usr/lib/postgresql"));
 
-        defaultServerPath = QStandardPaths::findExecutable(QStringLiteral("pg_ctl"), paths);
-        defaultInitDbPath = QStandardPaths::findExecutable(QStringLiteral("initdb"), paths);
+        defaultInitDbPath = QLatin1String(NIXPKGS_POSTGRES_INITDB);
         defaultHostName = Utils::preferredSocketDirectory(StandardDirs::saveDir("data", QStringLiteral("db_misc")));
-        defaultPgUpgradePath = QStandardPaths::findExecutable(QStringLiteral("pg_upgrade"), paths);
+        defaultPgUpgradePath = QLatin1String(NIXPKGS_POSTGRES_PG_UPGRADE);
         defaultPgData = StandardDirs::saveDir("data", QStringLiteral("db_data"));
     }
 
@@ -177,10 +174,7 @@ bool DbConfigPostgresql::init(QSettings &settings)
     mUserName = settings.value(QStringLiteral("User")).toString();
     mPassword = settings.value(QStringLiteral("Password")).toString();
     mConnectionOptions = settings.value(QStringLiteral("Options"), defaultOptions).toString();
-    mServerPath = settings.value(QStringLiteral("ServerPath"), defaultServerPath).toString();
-    if (mInternalServer && mServerPath.isEmpty()) {
-        mServerPath = defaultServerPath;
-    }
+    mServerPath = QLatin1String(NIXPKGS_POSTGRES_PG_CTL);
     qCDebug(AKONADISERVER_LOG) << "Found pg_ctl:" << mServerPath;
     mInitDbPath = settings.value(QStringLiteral("InitDbPath"), defaultInitDbPath).toString();
     if (mInternalServer && mInitDbPath.isEmpty()) {
@@ -206,7 +200,6 @@ bool DbConfigPostgresql::init(QSettings &settings)
         settings.setValue(QStringLiteral("Port"), mHostPort);
     }
     settings.setValue(QStringLiteral("Options"), mConnectionOptions);
-    settings.setValue(QStringLiteral("ServerPath"), mServerPath);
     settings.setValue(QStringLiteral("InitDbPath"), mInitDbPath);
     settings.setValue(QStringLiteral("StartServer"), mInternalServer);
     settings.endGroup();

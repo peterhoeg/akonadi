@@ -83,7 +83,6 @@ bool DbConfigMysql::init(QSettings &settings)
     // determine default settings depending on the driver
     QString defaultHostName;
     QString defaultOptions;
-    QString defaultServerPath;
     QString defaultCleanShutdownCommand;
 
 #ifndef Q_OS_WIN
@@ -92,16 +91,7 @@ bool DbConfigMysql::init(QSettings &settings)
 #endif
 
     const bool defaultInternalServer = true;
-#ifdef MYSQLD_EXECUTABLE
-    if (QFile::exists(QStringLiteral(MYSQLD_EXECUTABLE))) {
-        defaultServerPath = QStringLiteral(MYSQLD_EXECUTABLE);
-    }
-#endif
-    if (defaultServerPath.isEmpty()) {
-        defaultServerPath = findExecutable(QStringLiteral("mysqld"));
-    }
-
-    const QString mysqladminPath = findExecutable(QStringLiteral("mysqladmin"));
+    const QString mysqladminPath = QLatin1String(NIXPKGS_MYSQL_MYSQLADMIN);
     if (!mysqladminPath.isEmpty()) {
 #ifndef Q_OS_WIN
         defaultCleanShutdownCommand = QStringLiteral("%1 --defaults-file=%2/mysql.conf --socket=%3/%4 shutdown")
@@ -111,10 +101,10 @@ bool DbConfigMysql::init(QSettings &settings)
 #endif
     }
 
-    mMysqlInstallDbPath = findExecutable(QStringLiteral("mysql_install_db"));
+    mMysqlInstallDbPath = QLatin1String(NIXPKGS_MYSQL_MYSQL_INSTALL_DB);
     qCDebug(AKONADISERVER_LOG) << "Found mysql_install_db: " << mMysqlInstallDbPath;
 
-    mMysqlCheckPath = findExecutable(QStringLiteral("mysqlcheck"));
+    mMysqlCheckPath = QLatin1String(NIXPKGS_MYSQL_MYSQLCHECK);
     qCDebug(AKONADISERVER_LOG) << "Found mysqlcheck: " << mMysqlCheckPath;
 
     mInternalServer = settings.value(QStringLiteral("QMYSQL/StartServer"), defaultInternalServer).toBool();
@@ -131,7 +121,7 @@ bool DbConfigMysql::init(QSettings &settings)
     mUserName = settings.value(QStringLiteral("User")).toString();
     mPassword = settings.value(QStringLiteral("Password")).toString();
     mConnectionOptions = settings.value(QStringLiteral("Options"), defaultOptions).toString();
-    mMysqldPath = settings.value(QStringLiteral("ServerPath"), defaultServerPath).toString();
+    mMysqldPath = QLatin1String(NIXPKGS_MYSQL_MYSQLD);
     mCleanServerShutdownCommand = settings.value(QStringLiteral("CleanServerShutdownCommand"), defaultCleanShutdownCommand).toString();
     settings.endGroup();
 
@@ -141,9 +131,6 @@ bool DbConfigMysql::init(QSettings &settings)
         // intentionally not namespaced as we are the only one in this db instance when using internal mode
         mDatabaseName = QStringLiteral("akonadi");
     }
-    if (mInternalServer && (mMysqldPath.isEmpty() || !QFile::exists(mMysqldPath))) {
-        mMysqldPath = defaultServerPath;
-    }
 
     qCDebug(AKONADISERVER_LOG) << "Using mysqld:" << mMysqldPath;
 
@@ -152,9 +139,6 @@ bool DbConfigMysql::init(QSettings &settings)
     settings.setValue(QStringLiteral("Name"), mDatabaseName);
     settings.setValue(QStringLiteral("Host"), mHostName);
     settings.setValue(QStringLiteral("Options"), mConnectionOptions);
-    if (!mMysqldPath.isEmpty()) {
-        settings.setValue(QStringLiteral("ServerPath"), mMysqldPath);
-    }
     settings.setValue(QStringLiteral("StartServer"), mInternalServer);
     settings.endGroup();
     settings.sync();
@@ -209,7 +193,7 @@ bool DbConfigMysql::startInternalServer()
 #endif
 
     // generate config file
-    const QString globalConfig = StandardDirs::locateResourceFile("config", QStringLiteral("mysql-global.conf"));
+    const QString globalConfig = QLatin1String(NIX_OUT "/etc/xdg/akonadi/mysql-global.conf");
     const QString localConfig  = StandardDirs::locateResourceFile("config", QStringLiteral("mysql-local.conf"));
     const QString actualConfig = StandardDirs::saveDir("data") + QLatin1String("/mysql.conf");
     if (globalConfig.isEmpty()) {

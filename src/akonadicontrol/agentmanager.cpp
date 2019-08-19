@@ -78,12 +78,12 @@ AgentManager::AgentManager(bool verbose, QObject *parent)
     mStorageController = new Akonadi::ProcessControl;
     mStorageController->setShutdownTimeout(15 * 1000);   // the server needs more time for shutdown if we are using an internal mysqld
     connect(mStorageController, &Akonadi::ProcessControl::unableToStart, this, &AgentManager::serverFailure);
-    mStorageController->start(QStringLiteral("akonadiserver"), serviceArgs, Akonadi::ProcessControl::RestartOnCrash);
+    mStorageController->start(QLatin1String(NIX_OUT "/bin/akonadiserver"), serviceArgs, Akonadi::ProcessControl::RestartOnCrash);
 
     if (mAgentServerEnabled) {
         mAgentServer = new Akonadi::ProcessControl;
         connect(mAgentServer, &Akonadi::ProcessControl::unableToStart, this, &AgentManager::agentServerFailure);
-        mAgentServer->start(QStringLiteral("akonadi_agent_server"), serviceArgs, Akonadi::ProcessControl::RestartOnCrash);
+        mAgentServer->start(QLatin1String(NIX_OUT "/bin/akonadi_agent_server"), serviceArgs, Akonadi::ProcessControl::RestartOnCrash);
     }
 }
 
